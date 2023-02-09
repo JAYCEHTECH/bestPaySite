@@ -72,7 +72,7 @@ ROOT_URLCONF = 'bestPay.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [BASE_DIR / 'bestPayApp/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -143,3 +143,5 @@ STATICFILES_DIRS = [STATIC_DIR]
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'bestPayApp.CustomUser'
+
+

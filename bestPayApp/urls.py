@@ -11,6 +11,8 @@ from bestPayApp.dashboard import dashboardViews
 from bestPayApp.shop.product import productsViews
 from bestPayApp.shop.cart import cartViews
 from bestPayApp.shop.checkout import checkoutViews
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path("", views.home, name="home"),
@@ -79,4 +81,4 @@ urlpatterns = [
     path("place_order/<str:client_ref>/<str:first_name>/<str:last_name>/<str:email>/<str:phone>/<str:address>",
          checkoutViews.place_order, name="place-order"),
 
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

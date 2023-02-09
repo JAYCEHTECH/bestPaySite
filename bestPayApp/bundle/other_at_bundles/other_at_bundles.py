@@ -127,7 +127,7 @@ def ishare_bundle(request):
                 amount_to_be_charged = helper.trim_amount(float(offer_chosen))
                 client_ref = helper.ref_generator(2)
                 provider = "IShare Bundle"
-                return_url = f"http://127.0.0.1:8000/send_ishare_bundle/{client_ref}/{phone_number}/{bundle}"
+                return_url = f"https://bestpay-site-pde2n.ondigitalocean.app/send_ishare_bundle/{client_ref}/{phone_number}/{bundle}"
 
                 response = helper.execute_payment(amount, client_ref,
                                                   provider, return_url)

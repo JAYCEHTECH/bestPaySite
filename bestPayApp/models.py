@@ -85,7 +85,7 @@ class AirtelTigoBundleTransaction(models.Model):
 class IShareBundleTransaction(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     email = models.EmailField(max_length=250, null=False, blank=True)
-    bundle_number = models.PositiveIntegerField(null=False, blank=False)
+    bundle_number = models.BigIntegerField(null=False, blank=False)
     offer = models.CharField(max_length=250, null=False, blank=False)
     batch_id = models.CharField(max_length=250, null=False, blank=False)
     message = models.CharField(max_length=250, null=True, blank=True)

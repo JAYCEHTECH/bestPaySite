@@ -88,7 +88,7 @@ class IShareBundleTransaction(models.Model):
     bundle_number = models.PositiveIntegerField(null=False, blank=False)
     offer = models.CharField(max_length=250, null=False, blank=False)
     batch_id = models.CharField(max_length=250, null=False, blank=False)
-    message = models.CharField(max_length=250, null=False, blank=False)
+    message = models.CharField(max_length=250, null=True, blank=True)
     reference = models.CharField(max_length=20, null=False, blank=True)
     transaction_date = models.DateTimeField(auto_now_add=True)
     transaction_status = models.CharField(max_length=100, null=False)

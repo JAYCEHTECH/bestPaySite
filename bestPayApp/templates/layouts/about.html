@@ -1,4 +1,4 @@
-{% extends '../base.html' %}
+{% extends 'base.html' %}
 {% load static %}
 
 {% block content %}
@@ -6,7 +6,7 @@
   <div class="back-to-top"></div>
 
   <header>
-    {% include 'inc/../inc/navbar.html' %}
+    {% include 'inc/navbar.html' %}
 
     <div class="container mt-5">
       <div class="page-banner">
@@ -74,6 +74,6 @@
     </div> <!-- .page-section -->
   </main>
 
-  {% include 'inc/../inc/footer.html' %}
+  {% include 'inc/footer.html' %}
 
 {% endblock %}

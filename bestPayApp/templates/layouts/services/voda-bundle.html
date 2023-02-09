@@ -1,4 +1,4 @@
-{% extends '../../base.html' %}
+{% extends 'base.html' %}
 {% load static %}
 {% block title %} Vodafone Bundles - BestPay {% endblock %}
 {% block content %}
@@ -7,7 +7,7 @@
   <div class="back-to-top"></div>
 
   <header>
-    {% include 'inc/../../inc/navbar.html' %}
+    {% include 'inc/navbar.html' %}
 
     <div class="container mt-5">
       <div class="page-banner">
@@ -52,11 +52,12 @@
                           <img src="{% static 'img/services/vima-fig.png' %}" alt="">
                       </div>
                     <button type="submit" class="btn btn-lg btn-primary my-3">Checkout</button>
+                    </div>
             </form>
         </div>
     </div>   <!-- .page-section -->
   </main>
 
-{% include 'inc/../../inc/footer.html' %}
+{% include 'inc/footer.html' %}
 
 {% endblock %}

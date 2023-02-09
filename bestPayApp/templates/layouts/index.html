@@ -1,4 +1,4 @@
-{% extends '../base.html' %}
+{% extends 'base.html' %}
 {% load static %}
 {% block title %} Home - BestPay {% endblock title %}
 
@@ -8,7 +8,7 @@
   <div class="back-to-top"></div>
 
   <header>
-    {% include 'layouts/../inc/../inc/navbar.html' %}
+    {% include 'inc/navbar.html' %}
 
     <div class="page-banner home-banner">
       <div class="container h-100">
@@ -402,7 +402,7 @@
     </div> <!-- .page-section -->
   </main>
 
-    {% include 'layouts/../inc/../inc/footer.html' %}
+    {% include 'inc/footer.html' %}
 
 
 {% endblock content %}

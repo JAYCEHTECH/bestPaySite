@@ -4,6 +4,7 @@ from datetime import datetime
 import secrets
 
 import requests
+from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
@@ -23,53 +24,57 @@ def ref_generator(number):
 def airtime(request):
     form = forms.AirtimeForm()
     if request.method == "POST":
-        form = forms.AirtimeForm(request.POST)
-        if form.is_valid():
-            phone_number = str(form.cleaned_data["phone_number"])
-            amount = str(form.cleaned_data["amount"])
-            provider = form.cleaned_data["provider"]
-            reference = ref_generator(2)
+        if request.user.is_authenticated:
+            form = forms.AirtimeForm(request.POST)
+            if form.is_valid():
+                phone_number = str(form.cleaned_data["phone_number"])
+                amount = str(form.cleaned_data["amount"])
+                provider = form.cleaned_data["provider"]
+                reference = ref_generator(2)
 
-            amount_to_be_charged = amount
+                amount_to_be_charged = amount
 
-            float_amount = float(amount)
-            if float_amount == 0.5:
-                amount_to_be_charged = 0.49
-            elif float_amount == 1.00:
-                percentage = 0.01
-                amount_to_be_charged = float_amount - percentage
-            elif 2 <= float_amount <= 10:
-                percentage = 0.10
-                amount_to_be_charged = float_amount - percentage
-            elif 11 <= float_amount <= 50:
-                percentage = 0.50
-                amount_to_be_charged = float_amount - percentage
+                float_amount = float(amount)
+                if float_amount == 0.5:
+                    amount_to_be_charged = 0.49
+                elif float_amount == 1.00:
+                    percentage = 0.01
+                    amount_to_be_charged = float_amount - percentage
+                elif 2 <= float_amount <= 10:
+                    percentage = 0.10
+                    amount_to_be_charged = float_amount - percentage
+                elif 11 <= float_amount <= 50:
+                    percentage = 0.50
+                    amount_to_be_charged = float_amount - percentage
 
-            url = "https://payproxyapi.hubtel.com/items/initiate"
+                url = "https://payproxyapi.hubtel.com/items/initiate"
 
-            payload = json.dumps({
-                "totalAmount": amount_to_be_charged,
-                "description": "Test",
-                "callbackUrl": 'https://webhook.site/d53f5c53-eaba-4139-ad27-fb05b0a7be7f',
-                "returnUrl": f'http://127.0.0.1:8000/send_airtime/{reference}/{phone_number}/{amount}/{provider}',
-                "cancellationUrl": 'http://127.0.0.1:8000/services',
-                "merchantAccountNumber": "2017101",
-                "clientReference": reference
-            })
+                payload = json.dumps({
+                    "totalAmount": amount_to_be_charged,
+                    "description": "Test",
+                    "callbackUrl": 'https://webhook.site/d53f5c53-eaba-4139-ad27-fb05b0a7be7f',
+                    "returnUrl": f'http://127.0.0.1:8000/send_airtime/{reference}/{phone_number}/{amount}/{provider}',
+                    "cancellationUrl": 'http://127.0.0.1:8000/services',
+                    "merchantAccountNumber": "2017101",
+                    "clientReference": reference
+                })
 
-            headers = {
-                'Authorization': 'Basic VnY3MHhuTTplNTAzYzcyMGYzYzA0N2Q2ODNjYTM3MWQ5YWEwMDZkZg==',
-                'Content-Type': 'application/json'
-            }
+                headers = {
+                    'Authorization': 'Basic VnY3MHhuTTplNTAzYzcyMGYzYzA0N2Q2ODNjYTM3MWQ5YWEwMDZkZg==',
+                    'Content-Type': 'application/json'
+                }
 
-            response = requests.request("POST", url, headers=headers, data=payload)
+                response = requests.request("POST", url, headers=headers, data=payload)
 
-            data = response.json()
-            if data["status"] == "Success":
-                checkout_url = data["data"]["checkoutUrl"]
-                return redirect(checkout_url)
-            else:
-                return redirect("failed")
+                data = response.json()
+                if data["status"] == "Success":
+                    checkout_url = data["data"]["checkoutUrl"]
+                    return redirect(checkout_url)
+                else:
+                    return redirect("failed")
+        else:
+            messages.success(request, "Login to continue")
+            return redirect('login')
     context = {'form': form}
     return render(request, 'layouts/services/airtime.html', context=context)
 

@@ -1,6 +1,7 @@
 import json
 
 import requests
+from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 
@@ -36,31 +37,34 @@ def balance_check(request):
 def tv(request):
     form = TvForm()
     if request.method == "POST":
-        form = TvForm(request.POST)
-        if form.is_valid():
-            account_number = form.cleaned_data["account_number"]
-            amount = form.cleaned_data["amount"]
-            tv_provider = form.cleaned_data["provider"]
+        if request.user.is_authenticated:
+            form = TvForm(request.POST)
+            if form.is_valid():
+                account_number = form.cleaned_data["account_number"]
+                amount = form.cleaned_data["amount"]
+                tv_provider = form.cleaned_data["provider"]
 
-            amount = float(amount)
-            amount_to_be_charged = helper.trim_amount(float(amount))
-            client_ref = helper.ref_generator(2)
-            provider = f"TV Subscription - {tv_provider}"
+                amount = float(amount)
+                amount_to_be_charged = helper.trim_amount(float(amount))
+                client_ref = helper.ref_generator(2)
+                provider = f"TV Subscription - {tv_provider}"
 
-            return_url = f"http://127.0.0.1:8000/add_amount_to_tv_account/" \
-                         f"{client_ref}/{account_number}/{amount}/{tv_provider}"
+                return_url = f"http://127.0.0.1:8000/add_amount_to_tv_account/" \
+                             f"{client_ref}/{account_number}/{amount}/{tv_provider}"
 
-            response = helper.execute_payment(amount_to_be_charged, client_ref,
-                                              provider, return_url)
-            print(response.json())
-            data = response.json()
+                response = helper.execute_payment(amount_to_be_charged, client_ref,
+                                                  provider, return_url)
+                print(response.json())
+                data = response.json()
 
-            if data["status"] == "Success":
-                checkout = data['data']['checkoutUrl']
-                return redirect(checkout)
-            else:
-                return redirect('failed')
-
+                if data["status"] == "Success":
+                    checkout = data['data']['checkoutUrl']
+                    return redirect(checkout)
+                else:
+                    return redirect('failed')
+        else:
+            messages.warning(request, "Login to continue")
+            return redirect('login')
     context = {'form': form}
     return render(request, "layouts/services/tv.html", context=context)
 

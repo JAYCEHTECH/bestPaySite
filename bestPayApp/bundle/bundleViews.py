@@ -24,29 +24,33 @@ def at_all_bundles(request):
 def vodafone(request):
     form = VodafoneBundleForm()
     if request.method == "POST":
-        form = VodafoneBundleForm(request.POST)
-        if form.is_valid():
-            phone_number = form.cleaned_data["phone_number"]
-            offer_chosen = form.cleaned_data["offers"]
+        if request.user.is_authenticated:
+            form = VodafoneBundleForm(request.POST)
+            if form.is_valid():
+                phone_number = form.cleaned_data["phone_number"]
+                offer_chosen = form.cleaned_data["offers"]
 
-            voda_codes = helper.voda_codes
-            value = f"\"{voda_codes[float(offer_chosen)]}\""
-            amount = float(offer_chosen)
-            amount_to_be_charged = helper.trim_amount(float(offer_chosen))
-            client_ref = helper.ref_generator(2)
-            provider = "Vodafone Bundle"
-            return_url = f"http://127.0.0.1:8000/send_vodafone_bundle/{client_ref}/{phone_number}/{amount}/{value}"
+                voda_codes = helper.voda_codes
+                value = f"\"{voda_codes[float(offer_chosen)]}\""
+                amount = float(offer_chosen)
+                amount_to_be_charged = helper.trim_amount(float(offer_chosen))
+                client_ref = helper.ref_generator(2)
+                provider = "Vodafone Bundle"
+                return_url = f"http://127.0.0.1:8000/send_vodafone_bundle/{client_ref}/{phone_number}/{amount}/{value}"
 
-            response = helper.execute_payment(amount_to_be_charged, client_ref,
-                                              provider, return_url)
-            print(response.json())
-            data = response.json()
+                response = helper.execute_payment(amount_to_be_charged, client_ref,
+                                                  provider, return_url)
+                print(response.json())
+                data = response.json()
 
-            if data["status"] == "Success":
-                checkout = data['data']['checkoutUrl']
-                return redirect(checkout)
-            else:
-                return redirect('failed')
+                if data["status"] == "Success":
+                    checkout = data['data']['checkoutUrl']
+                    return redirect(checkout)
+                else:
+                    return redirect('failed')
+        else:
+            messages.success(request, "Log in to continue")
+            return redirect('login')
 
     context = {'form': form}
     return render(request, 'layouts/services/voda-bundle.html', context=context)
@@ -123,31 +127,34 @@ def send_voda_bundle(request, client_ref, phone_number, amount, value):
 def mtn(request):
     form = MTNBundleForm()
     if request.method == "POST":
-        form = MTNBundleForm(request.POST)
-        if form.is_valid():
-            phone_number = form.cleaned_data["phone_number"]
-            offer_chosen = form.cleaned_data["offers"]
+        if request.user.is_authenticated:
+            form = MTNBundleForm(request.POST)
+            if form.is_valid():
+                phone_number = form.cleaned_data["phone_number"]
+                offer_chosen = form.cleaned_data["offers"]
 
-            mtn_codes = helper.mtn_codes
-            value = f"\"{mtn_codes[float(offer_chosen)]}\""
-            print(value)
-            amount = float(offer_chosen)
-            amount_to_be_charged = helper.trim_amount(float(offer_chosen))
-            client_ref = helper.ref_generator(2)
-            provider = "MTN Bundle"
-            return_url = f"http://127.0.0.1:8000/send_mtn_bundle/{client_ref}/{phone_number}/{amount}/{value}"
+                mtn_codes = helper.mtn_codes
+                value = f"\"{mtn_codes[float(offer_chosen)]}\""
+                print(value)
+                amount = float(offer_chosen)
+                amount_to_be_charged = helper.trim_amount(float(offer_chosen))
+                client_ref = helper.ref_generator(2)
+                provider = "MTN Bundle"
+                return_url = f"http://127.0.0.1:8000/send_mtn_bundle/{client_ref}/{phone_number}/{amount}/{value}"
 
-            response = helper.execute_payment(amount_to_be_charged, client_ref,
-                                              provider, return_url)
-            print(response.json())
-            data = response.json()
+                response = helper.execute_payment(amount_to_be_charged, client_ref,
+                                                  provider, return_url)
+                print(response.json())
+                data = response.json()
 
-            if data["status"] == "Success":
-                checkout = data['data']['checkoutUrl']
-                return redirect(checkout)
-            else:
-                return redirect('failed')
-
+                if data["status"] == "Success":
+                    checkout = data['data']['checkoutUrl']
+                    return redirect(checkout)
+                else:
+                    return redirect('failed')
+        else:
+            messages.success(request, "Login to continue")
+            return redirect('login')
     context = {'form': form}
     return render(request, 'layouts/services/mtn-bundle.html', context=context)
 
@@ -220,32 +227,35 @@ def send_mtn_bundle(request, client_ref, phone_number, amount, value):
 def airtel_tigo(request):
     form = AirtelTigoBundleForm()
     if request.method == "POST":
-        form = AirtelTigoBundleForm(request.POST)
-        if form.is_valid():
-            phone_number = form.cleaned_data["phone_number"]
-            offer_chosen = form.cleaned_data["offers"]
+        if request.user.is_authenticated:
+            form = AirtelTigoBundleForm(request.POST)
+            if form.is_valid():
+                phone_number = form.cleaned_data["phone_number"]
+                offer_chosen = form.cleaned_data["offers"]
 
-            at_codes = helper.at_codes
-            value = f"\"{at_codes[float(offer_chosen)]}\""
-            print(value)
-            amount = float(offer_chosen)
-            amount_to_be_charged = helper.trim_amount(float(offer_chosen))
-            client_ref = helper.ref_generator(2)
-            provider = "AirtelTigo Big Time Bundle"
+                at_codes = helper.at_codes
+                value = f"\"{at_codes[float(offer_chosen)]}\""
+                print(value)
+                amount = float(offer_chosen)
+                amount_to_be_charged = helper.trim_amount(float(offer_chosen))
+                client_ref = helper.ref_generator(2)
+                provider = "AirtelTigo Big Time Bundle"
 
-            return_url = f"http://127.0.0.1:8000/send_at_bundle/{client_ref}/{phone_number}/{amount}/{value}"
+                return_url = f"http://127.0.0.1:8000/send_at_bundle/{client_ref}/{phone_number}/{amount}/{value}"
 
-            response = helper.execute_payment(amount_to_be_charged, client_ref,
-                                              provider, return_url)
-            print(response.json())
-            data = response.json()
+                response = helper.execute_payment(amount_to_be_charged, client_ref,
+                                                  provider, return_url)
+                print(response.json())
+                data = response.json()
 
-            if data["status"] == "Success":
-                checkout = data['data']['checkoutUrl']
-                return redirect(checkout)
-            else:
-                return redirect('failed')
-
+                if data["status"] == "Success":
+                    checkout = data['data']['checkoutUrl']
+                    return redirect(checkout)
+                else:
+                    return redirect('failed')
+        else:
+            messages.success(request, "Login to continue")
+            return redirect('login')
     context = {'form': form}
     return render(request, 'layouts/services/at-bundle.html', context=context)
 

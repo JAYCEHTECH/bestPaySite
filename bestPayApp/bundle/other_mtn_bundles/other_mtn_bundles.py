@@ -11,30 +11,33 @@ from bestPayApp import helper, models
 def other_mtn_bundles(request):
     form = OtherMTNBundleForm()
     if request.method == "POST":
-        form = OtherMTNBundleForm(request.POST)
-        if form.is_valid():
-            phone_number = form.cleaned_data["phone_number"]
-            offer_chosen = str(form.cleaned_data["offers"])
+        if request.user.is_authenticated:
+            form = OtherMTNBundleForm(request.POST)
+            if form.is_valid():
+                phone_number = form.cleaned_data["phone_number"]
+                offer_chosen = str(form.cleaned_data["offers"])
 
-            other_mtn_codes = helper.other_mtn_codes
-            value = f"\"{other_mtn_codes[offer_chosen]}\""
-            amount = helper.generate_amount_for_other_mtn_codes(offer_chosen)
-            amount_to_be_charged = helper.trim_amount(float(amount))
-            client_ref = helper.ref_generator(2)
-            provider = "Other MTN Bundle"
-            return_url = f"http://127.0.0.1:8000/send_other_mtn_bundle/{client_ref}/{phone_number}/{amount}/{value}"
+                other_mtn_codes = helper.other_mtn_codes
+                value = f"\"{other_mtn_codes[offer_chosen]}\""
+                amount = helper.generate_amount_for_other_mtn_codes(offer_chosen)
+                amount_to_be_charged = helper.trim_amount(float(amount))
+                client_ref = helper.ref_generator(2)
+                provider = "Other MTN Bundle"
+                return_url = f"http://127.0.0.1:8000/send_other_mtn_bundle/{client_ref}/{phone_number}/{amount}/{value}"
 
-            response = helper.execute_payment(amount_to_be_charged, client_ref,
-                                              provider, return_url)
-            print(response.json())
-            data = response.json()
+                response = helper.execute_payment(amount_to_be_charged, client_ref,
+                                                  provider, return_url)
+                print(response.json())
+                data = response.json()
 
-            if data["status"] == "Success":
-                checkout = data['data']['checkoutUrl']
-                return redirect(checkout)
-            else:
-                return redirect('failed')
-
+                if data["status"] == "Success":
+                    checkout = data['data']['checkoutUrl']
+                    return redirect(checkout)
+                else:
+                    return redirect('failed')
+        else:
+            messages.warning(request, "Login to continue")
+            return redirect('login')
     context = {'form': form}
     return render(request, 'layouts/services/other_mtn_bundles.html', context=context)
 

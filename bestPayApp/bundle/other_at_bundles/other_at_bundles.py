@@ -12,30 +12,33 @@ from bestPayApp import helper, models
 def sika_kokoo(request):
     form = SikaKokooBundleForm()
     if request.method == "POST":
-        form = SikaKokooBundleForm(request.POST)
-        if form.is_valid():
-            phone_number = form.cleaned_data["phone_number"]
-            offer_chosen = str(form.cleaned_data["offers"])
+        if request.user.is_authenticated:
+            form = SikaKokooBundleForm(request.POST)
+            if form.is_valid():
+                phone_number = form.cleaned_data["phone_number"]
+                offer_chosen = str(form.cleaned_data["offers"])
 
-            sk_codes = helper.sk_codes
-            value = f"\"{sk_codes[offer_chosen]}\""
-            amount = float(offer_chosen)
-            amount_to_be_charged = helper.trim_amount(float(offer_chosen))
-            client_ref = helper.ref_generator(2)
-            provider = "AirtelTigo Sika Kokoo Bundle"
-            return_url = f"http://127.0.0.1:8000/send_sk_bundle/{client_ref}/{phone_number}/{amount}/{value}"
+                sk_codes = helper.sk_codes
+                value = f"\"{sk_codes[offer_chosen]}\""
+                amount = float(offer_chosen)
+                amount_to_be_charged = helper.trim_amount(float(offer_chosen))
+                client_ref = helper.ref_generator(2)
+                provider = "AirtelTigo Sika Kokoo Bundle"
+                return_url = f"http://127.0.0.1:8000/send_sk_bundle/{client_ref}/{phone_number}/{amount}/{value}"
 
-            response = helper.execute_payment(amount_to_be_charged, client_ref,
-                                              provider, return_url)
-            print(response.json())
-            data = response.json()
+                response = helper.execute_payment(amount_to_be_charged, client_ref,
+                                                  provider, return_url)
+                print(response.json())
+                data = response.json()
 
-            if data["status"] == "Success":
-                checkout = data['data']['checkoutUrl']
-                return redirect(checkout)
-            else:
-                return redirect('failed')
-
+                if data["status"] == "Success":
+                    checkout = data['data']['checkoutUrl']
+                    return redirect(checkout)
+                else:
+                    return redirect('failed')
+        else:
+            messages.warning(request, "Login to continue")
+            return redirect('login')
     context = {'form': form}
     return render(request, 'layouts/services/at-sika-kokoo.html', context=context)
 
@@ -111,31 +114,34 @@ def send_sk_bundle(request, client_ref, phone_number, amount, value):
 def ishare_bundle(request):
     form = IShareBundleForm()
     if request.method == "POST":
-        form = IShareBundleForm(request.POST)
-        if form.is_valid():
-            phone_number = form.cleaned_data["phone_number"]
-            offer_chosen = form.cleaned_data["offers"]
-            amount = float(offer_chosen)
+        if request.user.is_authenticated:
+            form = IShareBundleForm(request.POST)
+            if form.is_valid():
+                phone_number = form.cleaned_data["phone_number"]
+                offer_chosen = form.cleaned_data["offers"]
+                amount = float(offer_chosen)
 
-            ishare_map = helper.ishare_map
-            bundle = ishare_map[amount]
+                ishare_map = helper.ishare_map
+                bundle = ishare_map[amount]
 
-            amount_to_be_charged = helper.trim_amount(float(offer_chosen))
-            client_ref = helper.ref_generator(2)
-            provider = "IShare Bundle"
-            return_url = f"http://127.0.0.1:8000/send_ishare_bundle/{client_ref}/{phone_number}/{bundle}"
+                amount_to_be_charged = helper.trim_amount(float(offer_chosen))
+                client_ref = helper.ref_generator(2)
+                provider = "IShare Bundle"
+                return_url = f"http://127.0.0.1:8000/send_ishare_bundle/{client_ref}/{phone_number}/{bundle}"
 
-            response = helper.execute_payment(amount, client_ref,
-                                              provider, return_url)
-            print(response.json())
-            data = response.json()
+                response = helper.execute_payment(amount, client_ref,
+                                                  provider, return_url)
+                print(response.json())
+                data = response.json()
 
-            if data["status"] == "Success":
-                checkout = data['data']['checkoutUrl']
-                return redirect(checkout)
-            else:
-                return redirect('failed')
-
+                if data["status"] == "Success":
+                    checkout = data['data']['checkoutUrl']
+                    return redirect(checkout)
+                else:
+                    return redirect('failed')
+        else:
+            messages.warning(request, "Login to continue")
+            return redirect('login')
     context = {'form': form}
     return render(request, 'layouts/services/ishare.html', context=context)
 

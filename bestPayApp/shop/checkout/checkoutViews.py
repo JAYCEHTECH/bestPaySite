@@ -2,12 +2,14 @@ import json
 
 import requests
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
 from bestPayApp import models, helper
 
 
+@login_required(login_url='login')
 def checkout(request):
     if request.method == "POST":
         amount = 0.49

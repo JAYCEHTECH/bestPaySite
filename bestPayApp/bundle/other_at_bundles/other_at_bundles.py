@@ -186,14 +186,13 @@ def send_ishare_bundle(request, client_ref, phone_number, bundle):
             })
 
             headers = {
-                'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI0YjJkOWE5Zi04OTQ0LTRhYTItYTAxYy01NmNlNTdmZWUwYmEiLCJhdXRob3JpdGllcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9BRE1JTiJ9XSwiaWF0IjoxNjc1OTAzMTkwLCJleHAiOjE2NzU5ODcyMDB9.-KWXVjYJYUrYV0Bzs0daWE_fJa2j9tKK8Csnq6wyBZB6FS9bPhknHVMfAhMUgyP9s-H5LotXJhHkiNTZv3jtVg',
+                'Authorization': config("BEARER_TOKEN"),
                 'Content-Type': 'application/json'
             }
 
             response = requests.request("POST", url, headers=headers, data=payload)
             json_data = response.json()
             top_batch_id = json_data["batchId"]
-            print(top_batch_id)
 
             if response.status_code == 200:
                 data = response.json()

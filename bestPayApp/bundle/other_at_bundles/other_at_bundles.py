@@ -237,5 +237,15 @@ def send_ishare_bundle(request, client_ref, phone_number, bundle):
                 new_ishare_bundle_transaction.save()
                 return redirect("failed")
         else:
+            new_ishare_bundle_transaction = models.IShareBundleTransaction.objects.create(
+                user=current_user,
+                email=current_user.email,
+                bundle_number=phone_number,
+                offer=f"{phone_number}-{bundle}MB",
+                batch_id="failed",
+                reference=client_ref,
+                transaction_status="Failed"
+            )
+            new_ishare_bundle_transaction.save()
             print("last error")
             return redirect('failed')

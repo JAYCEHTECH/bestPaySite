@@ -50,7 +50,7 @@ class SikaKokooBundleTransactionAdmin(admin.ModelAdmin):
 
 class IShareBundleTransactionAdmin(admin.ModelAdmin):
     list_display = ['user', 'bundle_number', 'offer', 'reference', 'batch_id', 'transaction_date', 'message']
-    search_fields = ['reference']
+    search_fields = ['reference', 'batch_id']
 
 
 class TvTransactionAdmin(admin.ModelAdmin):

@@ -1,3 +1,4 @@
+import requests
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordResetForm
@@ -74,13 +75,10 @@ def password_reset_request(request):
                         "uid": urlsafe_base64_encode(force_bytes(user.pk)),
                         "user": user,
                         'token': default_token_generator.make_token(user),
-                        'protocol': 'http',
+                        'protocol': 'https',
                     }
                     email = render_to_string(email_template_name, c)
-                    try:
-                        send_mail(subject, email, 'admin@example.com', [user.email], fail_silently=False)
-                    except BadHeaderError:
-                        return HttpResponse('Invalid header found.')
+                    requests.get(f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to=0{user.phone}&from=BestPay&sms={email}")
                     return redirect("/password_reset/done/")
     password_reset_form = PasswordResetForm()
     return render(request=request, template_name="passwords/password_reset.html",

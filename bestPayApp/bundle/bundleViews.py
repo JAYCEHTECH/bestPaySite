@@ -118,6 +118,15 @@ def send_voda_bundle(request, client_ref, phone_number, amount, value):
                 new_voda_bundle_transaction.save()
                 return redirect("failed")
         else:
+            new_voda_bundle_transaction = models.VodafoneBundleTransaction.objects.create(
+                user=current_user,
+                email=current_user.email,
+                bundle_number=phone_number,
+                offer=f"{amount}-{value}",
+                reference=client_ref,
+                transaction_status="Failed"
+            )
+            new_voda_bundle_transaction.save()
             print("last error")
             return redirect('failed')
 
@@ -220,6 +229,15 @@ def send_mtn_bundle(request, client_ref, phone_number, amount, value):
                 new_mtn_bundle_transaction.save()
                 return redirect("failed")
         else:
+            new_mtn_bundle_transaction = models.MTNBundleTransaction.objects.create(
+                user=current_user,
+                email=current_user.email,
+                bundle_number=phone_number,
+                offer=f"{amount}-{value}",
+                reference=client_ref,
+                transaction_status="Failed"
+            )
+            new_mtn_bundle_transaction.save()
             print("last error")
             return redirect('failed')
 
@@ -323,5 +341,13 @@ def send_at_bundle(request, client_ref, phone_number, amount, value):
                 new_at_bundle_transaction.save()
                 return redirect("failed")
         else:
-            print("last error")
+            new_at_bundle_transaction = models.AirtelTigoBundleTransaction.objects.create(
+                user=current_user,
+                email=current_user.email,
+                bundle_number=phone_number,
+                offer=f"{amount}-{value}",
+                reference=client_ref,
+                transaction_status="Failed"
+            )
+            new_at_bundle_transaction.save()
             return redirect('failed')

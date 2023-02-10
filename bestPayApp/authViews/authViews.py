@@ -70,7 +70,7 @@ def password_reset_request(request):
                     c = {
                         "name": user.first_name,
                         "email": user.email,
-                        'domain': 'https://www.bestpaygh.com',
+                        'domain': 'www.bestpaygh.com',
                         'site_name': 'BestPay',
                         "uid": urlsafe_base64_encode(force_bytes(user.pk)),
                         "user": user,

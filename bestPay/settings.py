@@ -27,7 +27,8 @@ SECRET_KEY = config("SECRET_KEY")
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "bestpay-site-pde2n.ondigitalocean.app"
+    "bestpay-site-pde2n.ondigitalocean.app",
+    "www.bestpaygh.com"
 ]
 
 # Application definition

@@ -24,3 +24,12 @@ window.addEventListener('DOMContentLoaded', event => {
     }
 
 });
+
+let table = $('#table_id').DataTable({
+        "lengthMenu": [ 10 ]
+    });
+
+    table
+    .column( '1:visible' )
+    .order( 'asc' )
+    .draw()

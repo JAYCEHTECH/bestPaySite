@@ -18,9 +18,9 @@
             <li class="nav-item">
               <a  href="{% url 'services' %}" class="nav-link {% if request.resolver_match.url_name == 'services' %}active fw-bold{% endif %}">Services</a>
             </li>
-            <li class="nav-item">
-              <a  href="{% url 'products' %}" class="nav-link {% if request.resolver_match.url_name == 'products' %}active fw-bold{% endif %}">Shop</a>
-            </li>
+{#            <li class="nav-item">#}
+{#              <a  href="{% url 'products' %}" class="nav-link {% if request.resolver_match.url_name == 'products' %}active fw-bold{% endif %}">Shop</a>#}
+{#            </li>#}
               {% if request.user.is_authenticated %}
                 <li class="nav-item">
                     <a href="{% url 'logout' %}" class="nav-link">Logout</a>
@@ -39,8 +39,8 @@
                 <a href="#" class="nav-link user-icon dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa-regular fa-user"></i> {{ request.user.username | capfirst }}</a>
                   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                     <a class="dropdown-item" href="{% url 'user-dashboard' %}">Dashboard</a>
-                    <a class="dropdown-item" href="{% url 'view-cart' %}">Shop Cart</a>
-                    <a class="dropdown-item" href="#">Shop Orders</a>
+{#                    <a class="dropdown-item" href="{% url 'view-cart' %}">Shop Cart</a>#}
+{#                    <a class="dropdown-item" href="#">Shop Orders</a>#}
                   </div>
               </div>
             {% endif %}

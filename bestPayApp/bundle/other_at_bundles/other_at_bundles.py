@@ -236,6 +236,7 @@ def send_ishare_bundle(request, client_ref, phone_number, bundle):
                     offer=f"{phone_number}-{bundle}MB",
                     batch_id=top_batch_id,
                     reference=client_ref,
+                    message="Airtime status code was not 200",
                     transaction_status="Failed"
                 )
                 new_ishare_bundle_transaction.save()
@@ -248,7 +249,9 @@ def send_ishare_bundle(request, client_ref, phone_number, bundle):
                 offer=f"{phone_number}-{bundle}MB",
                 batch_id="failed",
                 reference=client_ref,
+                message="Couldn't validate mobile money transaction",
                 transaction_status="Failed"
+
             )
             new_ishare_bundle_transaction.save()
             print("last error")

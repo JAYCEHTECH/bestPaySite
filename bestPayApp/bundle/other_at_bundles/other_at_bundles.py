@@ -254,5 +254,9 @@ def send_ishare_bundle(request, client_ref, phone_number, bundle):
 
             )
             new_ishare_bundle_transaction.save()
+            sms_message = f"Hello @{current_user.username}. Your bundle purchase was not successful. You tried crediting {phone_number} with {bundle}MB.\nReference:{client_ref}\nContact Support for assistance.\n\nThe BestPayTeam."
+            sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to=0{current_user.phone}&from=BestPay&sms={sms_message}"
+            response = requests.request("GET", url=sms_url)
+            print(response.text)
             print("last error")
             return redirect('failed')

@@ -211,10 +211,14 @@ def send_ishare_bundle(request, client_ref, phone_number, bundle):
                     transaction_status="Success",
                 )
                 new_ishare_bundle_transaction.save()
+                receiver_message = f"Your bundle purchase has been completed successfully. {bundle}MB has been credited to you by {current_user.phone}.\nReference: {batch_id}\n"
                 sms_message = f"Hello @{current_user.username}. Your bundle purchase has been completed successfully. {bundle}MB has been credited to {phone_number}.\nReference: {batch_id}\nThank you for using BestPay.\n\nThe BestPayTeam."
                 sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to=0{current_user.phone}&from=BestPay&sms={sms_message}"
                 response = requests.request("GET", url=sms_url)
                 print(response.status_code)
+                print(response.text)
+                r_sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to={phone_number}&from=Bundle&sms={receiver_message}"
+                response = requests.request("GET", url=r_sms_url)
                 print(response.text)
                 return redirect('thank_you')
             else:

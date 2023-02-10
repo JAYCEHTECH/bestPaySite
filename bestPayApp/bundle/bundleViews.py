@@ -36,7 +36,7 @@ def vodafone(request):
                 amount_to_be_charged = helper.trim_amount(float(offer_chosen))
                 client_ref = helper.ref_generator(2)
                 provider = "Vodafone Bundle"
-                return_url = f"http://127.0.0.1:8000/send_vodafone_bundle/{client_ref}/{phone_number}/{amount}/{value}"
+                return_url = f"https://www.bestpaygh.com/send_vodafone_bundle/{client_ref}/{phone_number}/{amount}/{value}"
 
                 response = helper.execute_payment(amount_to_be_charged, client_ref,
                                                   provider, return_url)
@@ -74,7 +74,7 @@ def send_voda_bundle(request, client_ref, phone_number, amount, value):
                 content = json.loads(request["content"])
             except ValueError:
                 return redirect(
-                    f'http://127.0.0.1:8000/send_vodafone_bundle/{client_ref}/'
+                    f'https://www.bestpaygh.com/send_vodafone_bundle/{client_ref}/'
                     f'{phone_number}/{amount}/{value}')
             status = content["Status"]
             ref = content["Data"]["ClientReference"]
@@ -140,7 +140,7 @@ def mtn(request):
                 amount_to_be_charged = helper.trim_amount(float(offer_chosen))
                 client_ref = helper.ref_generator(2)
                 provider = "MTN Bundle"
-                return_url = f"http://127.0.0.1:8000/send_mtn_bundle/{client_ref}/{phone_number}/{amount}/{value}"
+                return_url = f"https://www.bestpaygh.com/send_mtn_bundle/{client_ref}/{phone_number}/{amount}/{value}"
 
                 response = helper.execute_payment(amount_to_be_charged, client_ref,
                                                   provider, return_url)
@@ -177,7 +177,7 @@ def send_mtn_bundle(request, client_ref, phone_number, amount, value):
                 content = json.loads(request["content"])
             except ValueError:
                 return redirect(
-                    f'http://127.0.0.1:8000/send_mtn_bundle/{client_ref}/'
+                    f'https://www.bestpaygh.com/send_mtn_bundle/{client_ref}/'
                     f'{phone_number}/{amount}/{value}')
             status = content["Status"]
             ref = content["Data"]["ClientReference"]
@@ -241,7 +241,7 @@ def airtel_tigo(request):
                 client_ref = helper.ref_generator(2)
                 provider = "AirtelTigo Big Time Bundle"
 
-                return_url = f"http://127.0.0.1:8000/send_at_bundle/{client_ref}/{phone_number}/{amount}/{value}"
+                return_url = f"https://www.bestpaygh.com/send_at_bundle/{client_ref}/{phone_number}/{amount}/{value}"
 
                 response = helper.execute_payment(amount_to_be_charged, client_ref,
                                                   provider, return_url)
@@ -278,7 +278,7 @@ def send_at_bundle(request, client_ref, phone_number, amount, value):
                 content = json.loads(request["content"])
             except ValueError:
                 return redirect(
-                    f'http://127.0.0.1:8000/send_at_bundle/{client_ref}/'
+                    f'https://www.bestpaygh.com/send_at_bundle/{client_ref}/'
                     f'{phone_number}/{amount}/{value}')
             status = content["Status"]
             ref = content["Data"]["ClientReference"]

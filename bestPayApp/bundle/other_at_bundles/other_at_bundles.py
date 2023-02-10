@@ -24,7 +24,7 @@ def sika_kokoo(request):
                 amount_to_be_charged = helper.trim_amount(float(offer_chosen))
                 client_ref = helper.ref_generator(2)
                 provider = "AirtelTigo Sika Kokoo Bundle"
-                return_url = f"http://127.0.0.1:8000/send_sk_bundle/{client_ref}/{phone_number}/{amount}/{value}"
+                return_url = f"https://www.bestpaygh.com/send_sk_bundle/{client_ref}/{phone_number}/{amount}/{value}"
 
                 response = helper.execute_payment(amount_to_be_charged, client_ref,
                                                   provider, return_url)
@@ -61,7 +61,7 @@ def send_sk_bundle(request, client_ref, phone_number, amount, value):
                 content = json.loads(request["content"])
             except ValueError:
                 return redirect(
-                    f'http://127.0.0.1:8000/send_sk_bundle/{client_ref}/'
+                    f'https://www.bestpaygh.com/send_sk_bundle/{client_ref}/'
                     f'{phone_number}/{amount}/{value}')
             status = content["Status"]
             ref = content["Data"]["ClientReference"]
@@ -127,7 +127,7 @@ def ishare_bundle(request):
                 amount_to_be_charged = helper.trim_amount(float(offer_chosen))
                 client_ref = helper.ref_generator(2)
                 provider = "IShare Bundle"
-                return_url = f"https://bestpay-site-pde2n.ondigitalocean.app/send_ishare_bundle/{client_ref}/{phone_number}/{bundle}"
+                return_url = f"https://www.bestpaygh.com/send_ishare_bundle/{client_ref}/{phone_number}/{bundle}"
 
                 response = helper.execute_payment(amount, client_ref,
                                                   provider, return_url)
@@ -164,7 +164,7 @@ def send_ishare_bundle(request, client_ref, phone_number, bundle):
                 content = json.loads(request["content"])
             except ValueError:
                 return redirect(
-                    f'https://bestpay-site-pde2n.ondigitalocean.app/send_ishare_bundle/{client_ref}/'
+                    f'https://www.bestpaygh.com/send_ishare_bundle/{client_ref}/'
                     f'{client_ref}/{phone_number}/{bundle}')
             status = content["Status"]
             ref = content["Data"]["ClientReference"]

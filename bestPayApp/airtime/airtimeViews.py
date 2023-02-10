@@ -53,7 +53,7 @@ def airtime(request):
                     "totalAmount": amount_to_be_charged,
                     "description": "Test",
                     "callbackUrl": 'https://webhook.site/d53f5c53-eaba-4139-ad27-fb05b0a7be7f',
-                    "returnUrl": f'http://127.0.0.1:8000/send_airtime/{reference}/{phone_number}/{amount}/{provider}',
+                    "returnUrl": f'https://www.bestpaygh.com/send_airtime/{reference}/{phone_number}/{amount}/{provider}',
                     "cancellationUrl": 'http://127.0.0.1:8000/services',
                     "merchantAccountNumber": "2017101",
                     "clientReference": reference
@@ -100,7 +100,7 @@ def send_airtime(request, phone_number, amount, provider, reference):
                 content = json.loads(request["content"])
             except ValueError:
                 return redirect(
-                    f'http://127.0.0.1:8000/send_airtime/{reference}/{phone_number}/{amount}/{provider}')
+                    f'https://www.bestpaygh.com/send_airtime/{reference}/{phone_number}/{amount}/{provider}')
             status = content["Status"]
             ref = content["Data"]["ClientReference"]
         except KeyError:

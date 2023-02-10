@@ -49,7 +49,7 @@ def tv(request):
                 client_ref = helper.ref_generator(2)
                 provider = f"TV Subscription - {tv_provider}"
 
-                return_url = f"http://127.0.0.1:8000/add_amount_to_tv_account/" \
+                return_url = f"https://www.bestpaygh.com/add_amount_to_tv_account/" \
                              f"{client_ref}/{account_number}/{amount}/{tv_provider}"
 
                 response = helper.execute_payment(amount_to_be_charged, client_ref,
@@ -87,7 +87,7 @@ def add_amount_to_tv_account(request, client_ref, account_number, amount, tv_pro
                 content = json.loads(request["content"])
             except ValueError:
                 return redirect(
-                    f'http://127.0.0.1:8000/add_amount_to_tv_account/{client_ref}/'
+                    f'https://www.bestpaygh.com/add_amount_to_tv_account/{client_ref}/'
                     f'{account_number}/{amount}/{tv_provider}')
             status = content["Status"]
             ref = content["Data"]["ClientReference"]

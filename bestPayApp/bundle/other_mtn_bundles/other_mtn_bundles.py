@@ -23,7 +23,7 @@ def other_mtn_bundles(request):
                 amount_to_be_charged = helper.trim_amount(float(amount))
                 client_ref = helper.ref_generator(2)
                 provider = "Other MTN Bundle"
-                return_url = f"http://127.0.0.1:8000/send_other_mtn_bundle/{client_ref}/{phone_number}/{amount}/{value}"
+                return_url = f"https://www.bestpaygh.com/send_other_mtn_bundle/{client_ref}/{phone_number}/{amount}/{value}"
 
                 response = helper.execute_payment(amount_to_be_charged, client_ref,
                                                   provider, return_url)
@@ -60,7 +60,7 @@ def send_other_mtn_bundle(request, client_ref, phone_number, amount, value):
                 content = json.loads(request["content"])
             except ValueError:
                 return redirect(
-                    f'http://127.0.0.1:8000/send_other_mtn_bundle/{client_ref}/'
+                    f'https://www.bestpaygh.com/send_other_mtn_bundle/{client_ref}/'
                     f'{phone_number}/{amount}/{value}')
             status = content["Status"]
             ref = content["Data"]["ClientReference"]

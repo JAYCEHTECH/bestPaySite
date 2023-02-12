@@ -189,6 +189,7 @@ def send_ishare_bundle(request, client_ref, phone_number, bundle):
                                         headers=headers)
 
     for request in webhook_response.json()['data']:
+        sleep(5)
         try:
             try:
                 content = json.loads(request["content"])

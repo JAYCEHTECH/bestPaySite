@@ -6,13 +6,13 @@ from bestPayApp.forms import SendMessageForm
 # Create your views here.
 def home(request):
     form = SendMessageForm()
-    # if request.user.is_authenticated:
-    #     form = SendMessageForm(
-    #         initial={
-    #             'name': request.user.username,
-    #             'email': request.user.email
-    #         }
-    #     )
+    if request.user.is_authenticated:
+        form = SendMessageForm(
+            initial={
+                'name': request.user.username,
+                'email': request.user.email
+            }
+        )
     if request.method == "POST":
         form = SendMessageForm(request.POST)
         if form.is_valid():

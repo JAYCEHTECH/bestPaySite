@@ -29,6 +29,13 @@ class Payment(models.Model):
         return f"{self.user.username} - {self.payment_number} - {self.reference}"
 
 
+class Intruder(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    reference = models.CharField(max_length=256, null=False, blank=False)
+    transaction_date = models.DateTimeField(auto_now_add=True)
+    message = models.CharField(max_length=500, null=True, blank=True)
+
+
 class AirtimeTransaction(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     email = models.EmailField(max_length=250, null=False, blank=True)

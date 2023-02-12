@@ -49,7 +49,7 @@ def send_sk_bundle(request, client_ref, phone_number, amount, value):
     headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        "api-key": config("API-KEY"),
+        "api-key": config("API_KEY"),
     }
     webhook_response = requests.request("GET",
                                         "https://webhook.site/token/d53f5c53-eaba-4139-ad27-fb05b0a7be7f/"
@@ -94,7 +94,7 @@ def send_sk_bundle(request, client_ref, phone_number, amount, value):
 
                 payload = "{\r\n    \"Destination\": " + str(phone_number) + ",\r\n    \"Amount\": " + str(amount) + ",\r\n    \"CallbackUrl\": \"https://webhook.site/33d27e7d-6dd5-4899-b702-6c9022bea8c7\",\r\n    \"ClientReference\": " + str(reference) + ",\r\n    \"Extradata\" : {\r\n        \"bundle\" : " + value + "\r\n    }\r\n}\r\n"
                 headers = {
-                    'Authorization': config("HUBTEL_API-KEY"),
+                    'Authorization': config("HUBTEL_API_KEY"),
                     'Content-Type': 'text/plain'
                 }
 
@@ -180,7 +180,7 @@ def send_ishare_bundle(request, client_ref, phone_number, bundle):
     headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        "api-key": config("API-KEY"),
+        "api-key": config("API_KEY"),
     }
     webhook_response = requests.request("GET",
                                         "https://webhook.site/token/d53f5c53-eaba-4139-ad27-fb05b0a7be7f/"

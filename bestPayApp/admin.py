@@ -22,6 +22,10 @@ class PaymentAdmin(admin.ModelAdmin):
     list_display = ['user', 'payment_number', 'amount', 'reference', 'transaction_status', 'transaction_date']
 
 
+class IntruderAdmin(admin.ModelAdmin):
+    list_display = ['user', 'reference', 'message', 'transaction_date']
+
+
 class AirtimeTransactionAdmin(admin.ModelAdmin):
     list_display = ['user', 'airtime_amount', 'airtime_number', 'reference', 'provider', 'transaction_date']
     search_fields = ['reference']
@@ -88,6 +92,7 @@ admin.site.register(models.SikaKokooBundleTransaction, SikaKokooBundleTransactio
 admin.site.register(models.IShareBundleTransaction, IShareBundleTransactionAdmin)
 admin.site.register(models.TvTransaction, TvTransactionAdmin)
 admin.site.register(models.Payment, PaymentAdmin)
+admin.site.register(models.Intruder, IntruderAdmin)
 
 admin.site.register(models.Product, ProductAdmin)
 admin.site.register(models.Cart, CartAdmin)

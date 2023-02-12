@@ -29,7 +29,8 @@ DEBUG = True
 ALLOWED_HOSTS = [
     "bestpay-site-pde2n.ondigitalocean.app",
     "www.bestpaygh.com",
-    '127.0.0.1'
+    '127.0.0.1',
+    'bestpay-site-2nx6z.ondigitalocean.app'
 ]
 
 # Application definition

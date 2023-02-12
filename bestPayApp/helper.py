@@ -146,7 +146,7 @@ def execute_payment(amount_to_be_charged, client_ref, provider, return_url):
         "description": f"{provider}",
         "callbackUrl": 'https://webhook.site/d53f5c53-eaba-4139-ad27-fb05b0a7be7f',
         "returnUrl": f'{return_url}',
-        "cancellationUrl": 'http://127.0.0.1:8000/services',
+        "cancellationUrl": 'https://www.bestpaygh.com/services',
         "merchantAccountNumber": "2017101",
         "clientReference": client_ref
     })

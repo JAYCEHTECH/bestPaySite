@@ -45,6 +45,9 @@ def sika_kokoo(request):
 
 
 def send_sk_bundle(request, client_ref, phone_number, amount, value):
+    payment = models.Payment.objects.filter(reference=client_ref)
+    if payment:
+        return redirect('intruder')
     current_user = request.user
     headers = {
         'Accept': 'application/json',
@@ -176,6 +179,9 @@ def ishare_bundle(request):
 
 
 def send_ishare_bundle(request, client_ref, phone_number, bundle):
+    payment = models.Payment.objects.filter(reference=client_ref)
+    if payment:
+        return redirect('intruder')
     current_user = request.user
     headers = {
         'Accept': 'application/json',

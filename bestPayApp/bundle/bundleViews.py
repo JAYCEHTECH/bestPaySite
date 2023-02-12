@@ -57,6 +57,9 @@ def vodafone(request):
 
 
 def send_voda_bundle(request, client_ref, phone_number, amount, value):
+    payment = models.Payment.objects.filter(reference=client_ref)
+    if payment:
+        return redirect('intruder')
     current_user = request.user
     headers = {
         'Accept': 'application/json',
@@ -194,6 +197,9 @@ def mtn(request):
 
 
 def send_mtn_bundle(request, client_ref, phone_number, amount, value):
+    payment = models.Payment.objects.filter(reference=client_ref)
+    if payment:
+        return redirect('intruder')
     current_user = request.user
     headers = {
         'Accept': 'application/json',
@@ -329,6 +335,9 @@ def airtel_tigo(request):
 
 
 def send_at_bundle(request, client_ref, phone_number, amount, value):
+    payment = models.Payment.objects.filter(reference=client_ref)
+    if payment:
+        return redirect('intruder')
     current_user = request.user
     headers = {
         'Accept': 'application/json',

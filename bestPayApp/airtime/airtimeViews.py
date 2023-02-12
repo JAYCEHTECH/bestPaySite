@@ -82,6 +82,9 @@ def airtime(request):
 
 
 def send_airtime(request, phone_number, amount, provider, reference):
+    payment = models.Payment.objects.filter(reference=reference)
+    if payment:
+        return redirect('intruder')
     current_user = request.user
     airtime_provider = helper.airtime_provider_string(provider)
     headers = {

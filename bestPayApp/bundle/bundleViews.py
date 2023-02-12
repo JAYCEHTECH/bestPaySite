@@ -87,6 +87,12 @@ def send_voda_bundle(request, client_ref, phone_number, amount, value):
             print(f"{status}--{ref}--{momo_number}--{amount}--{payment_description}")
             payment = models.Payment.objects.filter(user=current_user, reference=client_ref, payment_visited=True)
             if payment:
+                new_intruder = models.Intruder.objects.create(
+                    user=current_user,
+                    reference=client_ref,
+                    message="Payment already exists and has reference has expired. User tried using it again."
+                )
+                new_intruder.save()
                 return redirect('intruder')
             else:
                 new_payment = models.Payment.objects.create(
@@ -218,6 +224,12 @@ def send_mtn_bundle(request, client_ref, phone_number, amount, value):
             print(f"{status}--{ref}--{momo_number}--{amount}--{payment_description}")
             payment = models.Payment.objects.filter(user=current_user, reference=client_ref, payment_visited=True)
             if payment:
+                new_intruder = models.Intruder.objects.create(
+                    user=current_user,
+                    reference=client_ref,
+                    message="Payment already exists and has reference has expired. User tried using it again."
+                )
+                new_intruder.save()
                 return redirect('intruder')
             else:
                 new_payment = models.Payment.objects.create(
@@ -347,6 +359,12 @@ def send_at_bundle(request, client_ref, phone_number, amount, value):
             print(f"{status}--{ref}--{momo_number}--{amount}--{payment_description}")
             payment = models.Payment.objects.filter(user=current_user, reference=client_ref, payment_visited=True)
             if payment:
+                new_intruder = models.Intruder.objects.create(
+                    user=current_user,
+                    reference=client_ref,
+                    message="Payment already exists and has reference has expired. User tried using it again."
+                )
+                new_intruder.save()
                 return redirect('intruder')
             else:
                 new_payment = models.Payment.objects.create(

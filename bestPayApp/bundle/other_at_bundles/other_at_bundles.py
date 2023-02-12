@@ -214,6 +214,7 @@ def send_ishare_bundle(request, client_ref, phone_number, bundle):
                     reference=client_ref,
                     message="Payment already exists and has reference has expired. User tried using it again."
                 )
+                new_intruder.save()
                 return redirect("intruder")
             else:
                 new_payment = models.Payment.objects.create(

@@ -115,6 +115,12 @@ def send_airtime(request, phone_number, amount, provider, reference):
             print(f"{status}--{ref}--{momo_number}--{amount}--{payment_description}")
             payment = models.Payment.objects.filter(user=current_user, reference=reference, payment_visited=True)
             if payment:
+                new_intruder = models.Intruder.objects.create(
+                    user=current_user,
+                    reference=reference,
+                    message="Payment already exists and has reference has expired. User tried using it again."
+                )
+                new_intruder.save()
                 return redirect('intruder')
             else:
                 new_payment = models.Payment.objects.create(

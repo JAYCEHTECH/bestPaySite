@@ -243,7 +243,7 @@ def send_ishare_bundle(request, client_ref, phone_number, bundle):
                 })
 
                 headers = {
-                    'Authorization': config("BEARER_TOKEN"),
+                    'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI0YjJkOWE5Zi04OTQ0LTRhYTItYTAxYy01NmNlNTdmZWUwYmEiLCJhdXRob3JpdGllcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9BRE1JTiJ9XSwiaWF0IjoxNjc2MTg3ODcxLCJleHAiOjE2NzYyNDY0MDB9.v-7CXpnNvBuBlmsutVokygkL-NnUWYjSr9e9xe3whNgazHdwMlJdqkph-MDwScU6IsSuqSqEM5OXl8W6E2NUow',
                     'Content-Type': 'application/json'
                 }
 

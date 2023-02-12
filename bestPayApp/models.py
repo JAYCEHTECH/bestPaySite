@@ -32,7 +32,7 @@ class Payment(models.Model):
 class AirtimeTransaction(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     email = models.EmailField(max_length=250, null=False, blank=True)
-    airtime_number = models.PositiveIntegerField(null=False, blank=False)
+    airtime_number = models.PositiveBigIntegerField(null=False, blank=False)
     airtime_amount = models.FloatField(null=False, blank=True)
     provider = models.CharField(max_length=20, null=False, blank=True)
     reference = models.CharField(max_length=20, null=False, blank=True)
@@ -46,7 +46,7 @@ class AirtimeTransaction(models.Model):
 class MTNBundleTransaction(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     email = models.EmailField(max_length=250, null=False, blank=True)
-    bundle_number = models.PositiveIntegerField(null=False, blank=False)
+    bundle_number = models.PositiveBigIntegerField(null=False, blank=False)
     offer = models.CharField(max_length=250, null=False, blank=False)
     reference = models.CharField(max_length=20, null=False, blank=True)
     transaction_date = models.DateTimeField(auto_now_add=True)
@@ -59,7 +59,7 @@ class MTNBundleTransaction(models.Model):
 class OtherMTNBundleTransaction(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     email = models.EmailField(max_length=250, null=False, blank=True)
-    bundle_number = models.PositiveIntegerField(null=False, blank=False)
+    bundle_number = models.PositiveBigIntegerField(null=False, blank=False)
     offer = models.CharField(max_length=250, null=False, blank=False)
     reference = models.CharField(max_length=20, null=False, blank=True)
     transaction_date = models.DateTimeField(auto_now_add=True)
@@ -73,7 +73,7 @@ class OtherMTNBundleTransaction(models.Model):
 class VodafoneBundleTransaction(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     email = models.EmailField(max_length=250, null=False, blank=True)
-    bundle_number = models.PositiveIntegerField(null=False, blank=False)
+    bundle_number = models.PositiveBigIntegerField(null=False, blank=False)
     offer = models.CharField(max_length=250, null=False, blank=False)
     reference = models.CharField(max_length=20, null=False, blank=True)
     transaction_date = models.DateTimeField(auto_now_add=True)
@@ -86,7 +86,7 @@ class VodafoneBundleTransaction(models.Model):
 class AirtelTigoBundleTransaction(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     email = models.EmailField(max_length=250, null=False, blank=True)
-    bundle_number = models.PositiveIntegerField(null=False, blank=False)
+    bundle_number = models.PositiveBigIntegerField(null=False, blank=False)
     offer = models.CharField(max_length=250, null=False, blank=False)
     reference = models.CharField(max_length=20, null=False, blank=True)
     transaction_date = models.DateTimeField(auto_now_add=True)
@@ -116,7 +116,7 @@ class IShareBundleTransaction(models.Model):
 class SikaKokooBundleTransaction(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     email = models.EmailField(max_length=250, null=False, blank=True)
-    bundle_number = models.PositiveIntegerField(null=False, blank=False)
+    bundle_number = models.PositiveBigIntegerField(null=False, blank=False)
     offer = models.CharField(max_length=250, null=False, blank=False)
     reference = models.CharField(max_length=20, null=False, blank=True)
     transaction_date = models.DateTimeField(auto_now_add=True)

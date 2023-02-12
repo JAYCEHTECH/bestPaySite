@@ -62,7 +62,7 @@ def airtime(request):
                 })
 
                 headers = {
-                    'Authorization': config("HUBTEL_API-KEY"),
+                    'Authorization': config("HUBTEL_API_KEY"),
                     'Content-Type': 'application/json'
                 }
 
@@ -139,7 +139,7 @@ def send_airtime(request, phone_number, amount, provider, reference):
                 payload = "{\r\n    \"Destination\": " + str(phone_number) + ",\r\n    \"Amount\": " + str(amount) + ",\r\n    \"CallbackUrl\": \"https://webhook.site/9125cb31-9481-47ad-972f-d1d7765a5957\",\r\n    \"ClientReference\": " + str(reference) + "\r\n}"
 
                 airtime_headers = {
-                    'Authorization': config("HUBTEL_API-KEY"),
+                    'Authorization': config("HUBTEL_API_KEY"),
                     'Content-Type': 'text/plain'
                 }
 

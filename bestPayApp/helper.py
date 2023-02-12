@@ -255,7 +255,7 @@ def display_name(phone_number):
     headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic VnY3MHhuTTplNTAzYzcyMGYzYzA0N2Q2ODNjYTM3MWQ5YWEwMDZkZg=='
+        'Authorization': config("HUBTEL_API_KEY")
     }
 
     response = requests.request("GET", url, headers=headers, data=payload)
@@ -283,7 +283,7 @@ def get_balance(account_number, provider):
     headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic VnY3MHhuTTplNTAzYzcyMGYzYzA0N2Q2ODNjYTM3MWQ5YWEwMDZkZg=='
+        'Authorization': config("HUBTEL_API_KEY")
     }
 
     response = requests.request("GET", url, headers=headers, data=payload)
@@ -297,7 +297,7 @@ def ishare_verification(batch_id):
 
     payload = {}
     headers = {
-        'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI0YjJkOWE5Zi04OTQ0LTRhYTItYTAxYy01NmNlNTdmZWUwYmEiLCJhdXRob3JpdGllcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9BRE1JTiJ9XSwiaWF0IjoxNjc1ODM2MjM5LCJleHAiOjE2NzU5MDA4MDB9.PUbA15LK3G4qWYLc-Cem0hZcgB2F2irEJaDWfdVRqezxtJ13-RXGaO0_6K2VwvWqMwOFyoIWpgBWawb1tqtQqQ'
+        'Authorization': config("BEARER_TOKEN")
     }
 
     response = requests.request("GET", url, headers=headers, data=payload)

@@ -90,7 +90,7 @@ def send_voda_bundle(request, client_ref, phone_number, amount, value):
                 new_intruder = models.Intruder.objects.create(
                     user=current_user,
                     reference=client_ref,
-                    message="Payment already exists and has reference has expired. User tried using it again."
+                    message="Payment already exists and the reference has expired. User tried using it again."
                 )
                 new_intruder.save()
                 return redirect('intruder')
@@ -227,7 +227,7 @@ def send_mtn_bundle(request, client_ref, phone_number, amount, value):
                 new_intruder = models.Intruder.objects.create(
                     user=current_user,
                     reference=client_ref,
-                    message="Payment already exists and has reference has expired. User tried using it again."
+                    message="Payment already exists and the reference has expired. User tried using it again."
                 )
                 new_intruder.save()
                 return redirect('intruder')
@@ -362,7 +362,7 @@ def send_at_bundle(request, client_ref, phone_number, amount, value):
                 new_intruder = models.Intruder.objects.create(
                     user=current_user,
                     reference=client_ref,
-                    message="Payment already exists and has reference has expired. User tried using it again."
+                    message="Payment already exists and the reference has expired. User tried using it again."
                 )
                 new_intruder.save()
                 return redirect('intruder')

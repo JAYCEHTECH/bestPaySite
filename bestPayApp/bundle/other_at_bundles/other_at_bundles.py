@@ -4,6 +4,7 @@ from time import sleep
 import requests
 from decouple import config
 from django.contrib import messages
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from bestPayApp.forms import SikaKokooBundleForm, IShareBundleForm
 from bestPayApp import helper, models
@@ -24,7 +25,7 @@ def sika_kokoo(request):
                 amount_to_be_charged = helper.trim_amount(float(offer_chosen))
                 client_ref = helper.ref_generator(2)
                 provider = "AirtelTigo Sika Kokoo Bundle"
-                return_url = f"https://www.bestpaygh.com/send_sk_bundle/{client_ref}/{phone_number}/{amount}/{value}"
+                return_url = f"http://127.0.0.1:8000/send_sk_bundle/{client_ref}/{phone_number}/{amount}/{value}"
 
                 response = helper.execute_payment(amount_to_be_charged, client_ref,
                                                   provider, return_url)
@@ -61,52 +62,80 @@ def send_sk_bundle(request, client_ref, phone_number, amount, value):
                 content = json.loads(request["content"])
             except ValueError:
                 return redirect(
-                    f'https://www.bestpaygh.com/send_sk_bundle/{client_ref}/'
+                    f'http://127.0.0.1:8000/send_sk_bundle/{client_ref}/'
                     f'{phone_number}/{amount}/{value}')
             status = content["Status"]
             ref = content["Data"]["ClientReference"]
         except KeyError:
             return redirect("failed")
         if ref == client_ref and status == "Success":
-            url = "https://cs.hubtel.com/commissionservices/2016884/06abd92da459428496967612463575ca"
-
-            reference = f"\"{client_ref}\""
-
-            payload = "{\r\n    \"Destination\": " + phone_number + ",\r\n    \"Amount\": " + amount + ",\r\n    \"CallbackUrl\": \"https://webhook.site/33d27e7d-6dd5-4899-b702-6c9022bea8c7\",\r\n    \"ClientReference\": " + reference + ",\r\n    \"Extradata\" : {\r\n        \"bundle\" : " + value + "\r\n    }\r\n}\r\n"
-            headers = {
-                'Authorization': 'Basic VnY3MHhuTTplNTAzYzcyMGYzYzA0N2Q2ODNjYTM3MWQ5YWEwMDZkZg==',
-                'Content-Type': 'text/plain'
-            }
-
-            response = requests.request("POST", url, headers=headers, data=payload)
-
-            if response.status_code == 200:
-                desc = helper.airtime_description(client_ref)
-                new_sk_bundle_transaction = models.SikaKokooBundleTransaction.objects.create(
-                    user=current_user,
-                    email=current_user.email,
-                    bundle_number=phone_number,
-                    offer=f"{amount}-{value}",
-                    reference=client_ref,
-                    transaction_status="Success",
-                    description=desc
-                )
-                new_sk_bundle_transaction.save()
-                return redirect('thank_you')
+            momo_number = content["Data"]["CustomerPhoneNumber"]
+            amount = content["Data"]["Amount"]
+            payment_description = content["Data"]["Description"]
+            print(f"{status}--{ref}--{momo_number}--{amount}--{payment_description}")
+            payment = models.Payment.objects.filter(user=current_user, reference=client_ref, payment_visited=True)
+            if payment:
+                return redirect('intruder')
             else:
-                print(response.json())
-                print("Not 200 error")
-                new_sk_bundle_transaction = models.SikaKokooBundleTransaction.objects.create(
+                new_payment = models.Payment.objects.create(
                     user=current_user,
-                    email=current_user.email,
-                    bundle_number=phone_number,
-                    offer=f"{amount}-{value}",
                     reference=client_ref,
-                    transaction_status="Failed"
+                    payment_number=momo_number,
+                    amount=amount,
+                    payment_description=payment_description,
+                    transaction_status=status,
+                    payment_visited=True,
+                    message="Payment verified successfully",
                 )
-                new_sk_bundle_transaction.save()
-                return redirect("failed")
+                new_payment.save()
+                url = "https://cs.hubtel.com/commissionservices/2016884/06abd92da459428496967612463575ca"
+
+                reference = f"\"{client_ref}\""
+
+                payload = "{\r\n    \"Destination\": " + str(phone_number) + ",\r\n    \"Amount\": " + str(amount) + ",\r\n    \"CallbackUrl\": \"https://webhook.site/33d27e7d-6dd5-4899-b702-6c9022bea8c7\",\r\n    \"ClientReference\": " + str(reference) + ",\r\n    \"Extradata\" : {\r\n        \"bundle\" : " + value + "\r\n    }\r\n}\r\n"
+                headers = {
+                    'Authorization': 'Basic VnY3MHhuTTplNTAzYzcyMGYzYzA0N2Q2ODNjYTM3MWQ5YWEwMDZkZg==',
+                    'Content-Type': 'text/plain'
+                }
+
+                response = requests.request("POST", url, headers=headers, data=payload)
+
+                if response.status_code == 200:
+                    desc = helper.airtime_description(client_ref)
+                    new_sk_bundle_transaction = models.SikaKokooBundleTransaction.objects.create(
+                        user=current_user,
+                        email=current_user.email,
+                        bundle_number=phone_number,
+                        offer=f"{amount}-{value}",
+                        reference=client_ref,
+                        transaction_status="Success",
+                        description=desc
+                    )
+                    new_sk_bundle_transaction.save()
+                    return redirect('thank_you')
+                else:
+                    print(response.json())
+                    print("Not 200 error")
+                    new_sk_bundle_transaction = models.SikaKokooBundleTransaction.objects.create(
+                        user=current_user,
+                        email=current_user.email,
+                        bundle_number=phone_number,
+                        offer=f"{amount}-{value}",
+                        reference=client_ref,
+                        transaction_status="Failed"
+                    )
+                    new_sk_bundle_transaction.save()
+                    return redirect("failed")
         else:
+            new_sk_bundle_transaction = models.SikaKokooBundleTransaction.objects.create(
+                user=current_user,
+                email=current_user.email,
+                bundle_number=phone_number,
+                offer=f"{amount}-{value}",
+                reference=client_ref,
+                transaction_status="Failed"
+            )
+            new_sk_bundle_transaction.save()
             print("last error")
             return redirect('failed')
 
@@ -127,7 +156,7 @@ def ishare_bundle(request):
                 amount_to_be_charged = helper.trim_amount(float(offer_chosen))
                 client_ref = helper.ref_generator(2)
                 provider = "IShare Bundle"
-                return_url = f"https://www.bestpaygh.com/send_ishare_bundle/{client_ref}/{phone_number}/{bundle}"
+                return_url = f"http://127.0.0.1:8000/send_ishare_bundle/{client_ref}/{phone_number}/{bundle}"
 
                 response = helper.execute_payment(amount, client_ref,
                                                   provider, return_url)
@@ -165,83 +194,104 @@ def send_ishare_bundle(request, client_ref, phone_number, bundle):
                 content = json.loads(request["content"])
             except ValueError:
                 return redirect(
-                    f'https://www.bestpaygh.com/send_ishare_bundle/{client_ref}/'
+                    f'http://127.0.0.1:8000/send_ishare_bundle/{client_ref}/'
                     f'{client_ref}/{phone_number}/{bundle}')
             status = content["Status"]
             ref = content["Data"]["ClientReference"]
+            print(ref)
+            print(client_ref)
         except KeyError:
             return redirect("failed")
         if ref == client_ref and status == "Success":
-            url = "https://lab.xardtek.com/npe/api/context/business/transaction/new-transaction"
-
-            payload = json.dumps({
-                "accountNo": f"233{str(current_user.phone)}",
-                "accountFirstName": current_user.first_name,
-                "accountLastName": current_user.last_name,
-                "accountMsisdn": str(phone_number),
-                "accountEmail": current_user.email,
-                "accountVoiceBalance": 0,
-                "accountDataBalance": float(bundle),
-                "accountCashBalance": 0,
-                "active": True
-            })
-
-            headers = {
-                'Authorization': config("BEARER_TOKEN"),
-                'Content-Type': 'application/json'
-            }
-
-            response = requests.request("POST", url, headers=headers, data=payload)
-            json_data = response.json()
-            top_batch_id = json_data["batchId"]
-
-            if response.status_code == 200:
-                data = response.json()
-                print(data)
-                batch_id = data["batchId"]
-                print(type(batch_id))
-                print(batch_id)
-
-                new_ishare_bundle_transaction = models.IShareBundleTransaction.objects.create(
-                    user=current_user,
-                    email=current_user.email,
-                    bundle_number=phone_number,
-                    offer=f"{phone_number}-{bundle}",
-                    batch_id=batch_id,
-                    reference=client_ref,
-                    transaction_status="Success",
-                )
-                new_ishare_bundle_transaction.save()
-                receiver_message = f"Your bundle purchase has been completed successfully. {bundle}MB has been credited to you by {current_user.phone}.\nReference: {batch_id}\n"
-                sms_message = f"Hello @{current_user.username}. Your bundle purchase has been completed successfully. {bundle}MB has been credited to {phone_number}.\nReference: {batch_id}\nThank you for using BestPay.\n\nThe BestPayTeam."
-                sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to=0{current_user.phone}&from=BestPay&sms={sms_message}"
-                response = requests.request("GET", url=sms_url)
-                print(response.status_code)
-                print(response.text)
-                r_sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to={phone_number}&from=Bundle&sms={receiver_message}"
-                response = requests.request("GET", url=r_sms_url)
-                print(response.text)
-                return redirect('thank_you')
+            momo_number = content["Data"]["CustomerPhoneNumber"]
+            amount = content["Data"]["Amount"]
+            payment_description = content["Data"]["Description"]
+            print(f"{status}--{ref}--{momo_number}--{amount}--{payment_description}")
+            payment = models.Payment.objects.filter(user=current_user, reference=client_ref, payment_visited=True)
+            if payment:
+                return HttpResponseRedirect("Stop doing that")
             else:
-                print(response.json())
-                print("Not 200 error")
-                sms_message = f"Hello @{current_user.username}. Your bundle purchase was not successful. You tried crediting {phone_number} with {bundle}MB.\nReference:{top_batch_id}\nContact Support for assistance.\n\nThe BestPayTeam."
-                sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to=0{current_user.phone}&from=BestPay&sms={sms_message}"
-                response = requests.request("GET", url=sms_url)
-                print(response.status_code)
-                print(response.text)
-                new_ishare_bundle_transaction = models.IShareBundleTransaction.objects.create(
+                new_payment = models.Payment.objects.create(
                     user=current_user,
-                    email=current_user.email,
-                    bundle_number=phone_number,
-                    offer=f"{phone_number}-{bundle}MB",
-                    batch_id=top_batch_id,
                     reference=client_ref,
-                    message="Airtime status code was not 200",
-                    transaction_status="Failed"
+                    payment_number=momo_number,
+                    amount=amount,
+                    payment_description=payment_description,
+                    transaction_status=status,
+                    payment_visited=True,
+                    message="Payment verified successfully",
                 )
-                new_ishare_bundle_transaction.save()
-                return redirect("failed")
+                new_payment.save()
+                # url = "https://lab.xardtek.com/npe/api/context/business/transaction/new-transaction"
+                #
+                # payload = json.dumps({
+                #     "accountNo": f"233{str(current_user.phone)}",
+                #     "accountFirstName": current_user.first_name,
+                #     "accountLastName": current_user.last_name,
+                #     "accountMsisdn": str(phone_number),
+                #     "accountEmail": current_user.email,
+                #     "accountVoiceBalance": 0,
+                #     "accountDataBalance": float(bundle),
+                #     "accountCashBalance": 0,
+                #     "active": True
+                # })
+                #
+                # headers = {
+                #     'Authorization': config("BEARER_TOKEN"),
+                #     'Content-Type': 'application/json'
+                # }
+                #
+                # response = requests.request("POST", url, headers=headers, data=payload)
+                # json_data = response.json()
+                # top_batch_id = json_data["batchId"]
+                #
+                # if response.status_code == 200:
+                #     data = response.json()
+                #     print(data)
+                #     batch_id = data["batchId"]
+                #     print(type(batch_id))
+                #     print(batch_id)
+                #
+                #     new_ishare_bundle_transaction = models.IShareBundleTransaction.objects.create(
+                #         user=current_user,
+                #         email=current_user.email,
+                #         bundle_number=phone_number,
+                #         offer=f"{phone_number}-{bundle}",
+                #         batch_id=batch_id,
+                #         reference=client_ref,
+                #         transaction_status="Success",
+                #     )
+                #     new_ishare_bundle_transaction.save()
+                #     receiver_message = f"Your bundle purchase has been completed successfully. {bundle}MB has been credited to you by {current_user.phone}.\nReference: {batch_id}\n"
+                #     sms_message = f"Hello @{current_user.username}. Your bundle purchase has been completed successfully. {bundle}MB has been credited to {phone_number}.\nReference: {batch_id}\nThank you for using BestPay.\n\nThe BestPayTeam."
+                #     sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to=0{current_user.phone}&from=BestPay&sms={sms_message}"
+                #     response = requests.request("GET", url=sms_url)
+                #     print(response.status_code)
+                #     print(response.text)
+                #     r_sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to={phone_number}&from=Bundle&sms={receiver_message}"
+                #     response = requests.request("GET", url=r_sms_url)
+                #     print(response.text)
+                #     return redirect('thank_you')
+                # else:
+                #     print(response.json())
+                #     print("Not 200 error")
+                #     sms_message = f"Hello @{current_user.username}. Your bundle purchase was not successful. You tried crediting {phone_number} with {bundle}MB.\nReference:{top_batch_id}\nContact Support for assistance.\n\nThe BestPayTeam."
+                #     sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to=0{current_user.phone}&from=BestPay&sms={sms_message}"
+                #     response = requests.request("GET", url=sms_url)
+                #     print(response.status_code)
+                #     print(response.text)
+                #     new_ishare_bundle_transaction = models.IShareBundleTransaction.objects.create(
+                #         user=current_user,
+                #         email=current_user.email,
+                #         bundle_number=phone_number,
+                #         offer=f"{phone_number}-{bundle}MB",
+                #         batch_id=top_batch_id,
+                #         reference=client_ref,
+                #         message="Airtime status code was not 200",
+                #         transaction_status="Failed"
+                #     )
+                #     new_ishare_bundle_transaction.save()
+                #     return redirect("failed")
         else:
             new_ishare_bundle_transaction = models.IShareBundleTransaction.objects.create(
                 user=current_user,

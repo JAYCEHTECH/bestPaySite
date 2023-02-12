@@ -67,46 +67,63 @@ def send_other_mtn_bundle(request, client_ref, phone_number, amount, value):
         except KeyError:
             return redirect("failed")
         if ref == client_ref and status == "Success":
-            if value == "kokrokoo_bundle_1":
-                url = 'https://cs.hubtel.com/commissionservices/2016884/b230733cd56b4a0fad820e39f66bc27c'
+            momo_number = content["Data"]["CustomerPhoneNumber"]
+            amount = content["Data"]["Amount"]
+            payment_description = content["Data"]["Description"]
+            print(f"{status}--{ref}--{momo_number}--{amount}--{payment_description}")
+            payment = models.Payment.objects.filter(user=current_user, reference=client_ref, payment_visited=True)
+            if payment:
+                return redirect('intruder')
             else:
-                url = "https://cs.hubtel.com/commissionservices/2016884/b230733cd56b4a0fad820e39f66bc27c"
-            reference = f"\"{client_ref}\""
+                if value == "kokrokoo_bundle_1":
+                    url = 'https://cs.hubtel.com/commissionservices/2016884/b230733cd56b4a0fad820e39f66bc27c'
+                else:
+                    url = "https://cs.hubtel.com/commissionservices/2016884/b230733cd56b4a0fad820e39f66bc27c"
+                reference = f"\"{client_ref}\""
 
-            payload = "{\r\n    \"Destination\": " + phone_number + ",\r\n    \"Amount\": " + amount + ",\r\n    \"CallbackUrl\": \"https://webhook.site/33d27e7d-6dd5-4899-b702-6c9022bea8c7\",\r\n    \"ClientReference\": " + reference + ",\r\n    \"Extradata\" : {\r\n        \"bundle\" : " + value + "\r\n    }\r\n}\r\n"
-            headers = {
-                'Authorization': 'Basic VnY3MHhuTTplNTAzYzcyMGYzYzA0N2Q2ODNjYTM3MWQ5YWEwMDZkZg==',
-                'Content-Type': 'text/plain'
-            }
+                payload = "{\r\n    \"Destination\": " + str(phone_number) + ",\r\n    \"Amount\": " + str(amount) + ",\r\n    \"CallbackUrl\": \"https://webhook.site/33d27e7d-6dd5-4899-b702-6c9022bea8c7\",\r\n    \"ClientReference\": " + str(reference) + ",\r\n    \"Extradata\" : {\r\n        \"bundle\" : " + value + "\r\n    }\r\n}\r\n"
+                headers = {
+                    'Authorization': 'Basic VnY3MHhuTTplNTAzYzcyMGYzYzA0N2Q2ODNjYTM3MWQ5YWEwMDZkZg==',
+                    'Content-Type': 'text/plain'
+                }
 
-            response = requests.request("POST", url, headers=headers, data=payload)
+                response = requests.request("POST", url, headers=headers, data=payload)
 
-            if response.status_code == 200:
-                desc = helper.airtime_description(client_ref)
-                new_mtn_bundle_transaction = models.OtherMTNBundleTransaction.objects.create(
-                    user=current_user,
-                    email=current_user.email,
-                    bundle_number=phone_number,
-                    offer=f"{amount}-{value}",
-                    reference=client_ref,
-                    transaction_status="Success",
-                    description=desc
-                )
-                new_mtn_bundle_transaction.save()
-                return redirect('thank_you')
-            else:
-                print(response.json())
-                print("Not 200 error")
-                new_mtn_bundle_transaction = models.OtherMTNBundleTransaction.objects.create(
-                    user=current_user,
-                    email=current_user.email,
-                    bundle_number=phone_number,
-                    offer=f"{amount}-{value}",
-                    reference=client_ref,
-                    transaction_status="Failed"
-                )
-                new_mtn_bundle_transaction.save()
-                return redirect("failed")
+                if response.status_code == 200:
+                    desc = helper.airtime_description(client_ref)
+                    new_mtn_bundle_transaction = models.OtherMTNBundleTransaction.objects.create(
+                        user=current_user,
+                        email=current_user.email,
+                        bundle_number=phone_number,
+                        offer=f"{amount}-{value}",
+                        reference=client_ref,
+                        transaction_status="Success",
+                        description=desc
+                    )
+                    new_mtn_bundle_transaction.save()
+                    return redirect('thank_you')
+                else:
+                    print(response.json())
+                    print("Not 200 error")
+                    new_mtn_bundle_transaction = models.OtherMTNBundleTransaction.objects.create(
+                        user=current_user,
+                        email=current_user.email,
+                        bundle_number=phone_number,
+                        offer=f"{amount}-{value}",
+                        reference=client_ref,
+                        transaction_status="Failed"
+                    )
+                    new_mtn_bundle_transaction.save()
+                    return redirect("failed")
         else:
+            new_mtn_bundle_transaction = models.OtherMTNBundleTransaction.objects.create(
+                user=current_user,
+                email=current_user.email,
+                bundle_number=phone_number,
+                offer=f"{amount}-{value}",
+                reference=client_ref,
+                transaction_status="Failed"
+            )
+            new_mtn_bundle_transaction.save()
             print("last error")
             return redirect('failed')

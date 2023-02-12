@@ -49,6 +49,10 @@ def failed(request):
     return render(request, "layouts/failed.html")
 
 
+def intruder(request):
+    return render(request, "layouts/thief.html")
+
+
 
 
 

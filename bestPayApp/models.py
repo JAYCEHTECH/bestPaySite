@@ -14,6 +14,21 @@ class CustomUser(AbstractUser):
     password2 = models.CharField(max_length=100, null=False, blank=False)
 
 
+class Payment(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    reference = models.CharField(max_length=256, null=False, blank=False)
+    payment_number = models.CharField(max_length=256, null=True, blank=True)
+    amount = models.FloatField(null=True, blank=True)
+    payment_description = models.CharField(max_length=500, null=True, blank=True)
+    transaction_status = models.CharField(max_length=256, null=True, blank=True)
+    transaction_date = models.DateTimeField(auto_now_add=True)
+    message = models.CharField(max_length=500, null=True, blank=True)
+    payment_visited = models.BooleanField(blank=False, null=False)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.payment_number} - {self.reference}"
+
+
 class AirtimeTransaction(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     email = models.EmailField(max_length=250, null=False, blank=True)

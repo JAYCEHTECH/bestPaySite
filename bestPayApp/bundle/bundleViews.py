@@ -81,42 +81,61 @@ def send_voda_bundle(request, client_ref, phone_number, amount, value):
         except KeyError:
             return redirect("failed")
         if ref == client_ref and status == "Success":
-            url = "https://cs.hubtel.com/commissionservices/2016884/fa27127ba039455da04a2ac8a1613e00"
-
-            reference = f"\"{client_ref}\""
-
-            payload = "{\r\n    \"Destination\": " + phone_number + ",\r\n    \"Amount\": " + amount + ",\r\n    \"CallbackUrl\": \"https://webhook.site/33d27e7d-6dd5-4899-b702-6c9022bea8c7\",\r\n    \"ClientReference\": " + reference + ",\r\n    \"Extradata\" : {\r\n        \"bundle\" : " + value + "\r\n    }\r\n}\r\n"
-            headers = {
-                'Authorization': 'Basic VnY3MHhuTTplNTAzYzcyMGYzYzA0N2Q2ODNjYTM3MWQ5YWEwMDZkZg==',
-                'Content-Type': 'text/plain'
-            }
-
-            response = requests.request("POST", url, headers=headers, data=payload)
-
-            if response.status_code == 200:
-                new_voda_bundle_transaction = models.VodafoneBundleTransaction.objects.create(
-                    user=current_user,
-                    email=current_user.email,
-                    bundle_number=phone_number,
-                    offer=f"{amount}-{value}",
-                    reference=client_ref,
-                    transaction_status="Success"
-                )
-                new_voda_bundle_transaction.save()
-                return redirect('thank_you')
+            momo_number = content["Data"]["CustomerPhoneNumber"]
+            amount = content["Data"]["Amount"]
+            payment_description = content["Data"]["Description"]
+            print(f"{status}--{ref}--{momo_number}--{amount}--{payment_description}")
+            payment = models.Payment.objects.filter(user=current_user, reference=client_ref, payment_visited=True)
+            if payment:
+                return redirect('intruder')
             else:
-                print(response.json())
-                print("Not 200 error")
-                new_voda_bundle_transaction = models.VodafoneBundleTransaction.objects.create(
+                new_payment = models.Payment.objects.create(
                     user=current_user,
-                    email=current_user.email,
-                    bundle_number=phone_number,
-                    offer=f"{amount}-{value}",
                     reference=client_ref,
-                    transaction_status="Failed"
+                    payment_number=momo_number,
+                    amount=amount,
+                    payment_description=payment_description,
+                    transaction_status=status,
+                    payment_visited=True,
+                    message="Payment verified successfully",
                 )
-                new_voda_bundle_transaction.save()
-                return redirect("failed")
+                new_payment.save()
+                url = "https://cs.hubtel.com/commissionservices/2016884/fa27127ba039455da04a2ac8a1613e00"
+
+                reference = f"\"{client_ref}\""
+
+                payload = "{\r\n    \"Destination\": " + str(phone_number) + ",\r\n    \"Amount\": " + str(amount) + ",\r\n    \"CallbackUrl\": \"https://webhook.site/33d27e7d-6dd5-4899-b702-6c9022bea8c7\",\r\n    \"ClientReference\": " + str(reference) + ",\r\n    \"Extradata\" : {\r\n        \"bundle\" : " + value + "\r\n    }\r\n}\r\n"
+                headers = {
+                    'Authorization': 'Basic VnY3MHhuTTplNTAzYzcyMGYzYzA0N2Q2ODNjYTM3MWQ5YWEwMDZkZg==',
+                    'Content-Type': 'text/plain'
+                }
+
+                response = requests.request("POST", url, headers=headers, data=payload)
+
+                if response.status_code == 200:
+                    new_voda_bundle_transaction = models.VodafoneBundleTransaction.objects.create(
+                        user=current_user,
+                        email=current_user.email,
+                        bundle_number=phone_number,
+                        offer=f"{amount}-{value}",
+                        reference=client_ref,
+                        transaction_status="Success"
+                    )
+                    new_voda_bundle_transaction.save()
+                    return redirect('thank_you')
+                else:
+                    print(response.json())
+                    print("Not 200 error")
+                    new_voda_bundle_transaction = models.VodafoneBundleTransaction.objects.create(
+                        user=current_user,
+                        email=current_user.email,
+                        bundle_number=phone_number,
+                        offer=f"{amount}-{value}",
+                        reference=client_ref,
+                        transaction_status="Failed"
+                    )
+                    new_voda_bundle_transaction.save()
+                    return redirect("failed")
         else:
             new_voda_bundle_transaction = models.VodafoneBundleTransaction.objects.create(
                 user=current_user,
@@ -193,41 +212,60 @@ def send_mtn_bundle(request, client_ref, phone_number, amount, value):
         except KeyError:
             return redirect("failed")
         if ref == client_ref and status == "Success":
-            url = "https://cs.hubtel.com/commissionservices/2016884/b230733cd56b4a0fad820e39f66bc27c"
-            reference = f"\"{client_ref}\""
-
-            payload = "{\r\n    \"Destination\": " + phone_number + ",\r\n    \"Amount\": " + amount + ",\r\n    \"CallbackUrl\": \"https://webhook.site/33d27e7d-6dd5-4899-b702-6c9022bea8c7\",\r\n    \"ClientReference\": " + reference + ",\r\n    \"Extradata\" : {\r\n        \"bundle\" : " + value + "\r\n    }\r\n}\r\n"
-            headers = {
-                'Authorization': 'Basic VnY3MHhuTTplNTAzYzcyMGYzYzA0N2Q2ODNjYTM3MWQ5YWEwMDZkZg==',
-                'Content-Type': 'text/plain'
-            }
-
-            response = requests.request("POST", url, headers=headers, data=payload)
-
-            if response.status_code == 200:
-                new_mtn_bundle_transaction = models.MTNBundleTransaction.objects.create(
-                    user=current_user,
-                    email=current_user.email,
-                    bundle_number=phone_number,
-                    offer=f"{amount}-{value}",
-                    reference=client_ref,
-                    transaction_status="Success"
-                )
-                new_mtn_bundle_transaction.save()
-                return redirect('thank_you')
+            momo_number = content["Data"]["CustomerPhoneNumber"]
+            amount = content["Data"]["Amount"]
+            payment_description = content["Data"]["Description"]
+            print(f"{status}--{ref}--{momo_number}--{amount}--{payment_description}")
+            payment = models.Payment.objects.filter(user=current_user, reference=client_ref, payment_visited=True)
+            if payment:
+                return redirect('intruder')
             else:
-                print(response.json())
-                print("Not 200 error")
-                new_mtn_bundle_transaction = models.MTNBundleTransaction.objects.create(
+                new_payment = models.Payment.objects.create(
                     user=current_user,
-                    email=current_user.email,
-                    bundle_number=phone_number,
-                    offer=f"{amount}-{value}",
                     reference=client_ref,
-                    transaction_status="Failed"
+                    payment_number=momo_number,
+                    amount=amount,
+                    payment_description=payment_description,
+                    transaction_status=status,
+                    payment_visited=True,
+                    message="Payment verified successfully",
                 )
-                new_mtn_bundle_transaction.save()
-                return redirect("failed")
+                new_payment.save()
+                url = "https://cs.hubtel.com/commissionservices/2016884/b230733cd56b4a0fad820e39f66bc27c"
+                reference = f"\"{client_ref}\""
+
+                payload = "{\r\n    \"Destination\": " + str(phone_number) + ",\r\n    \"Amount\": " + str(amount) + ",\r\n    \"CallbackUrl\": \"https://webhook.site/33d27e7d-6dd5-4899-b702-6c9022bea8c7\",\r\n    \"ClientReference\": " + str(reference) + ",\r\n    \"Extradata\" : {\r\n        \"bundle\" : " + value + "\r\n    }\r\n}\r\n"
+                headers = {
+                    'Authorization': 'Basic VnY3MHhuTTplNTAzYzcyMGYzYzA0N2Q2ODNjYTM3MWQ5YWEwMDZkZg==',
+                    'Content-Type': 'text/plain'
+                }
+
+                response = requests.request("POST", url, headers=headers, data=payload)
+
+                if response.status_code == 200:
+                    new_mtn_bundle_transaction = models.MTNBundleTransaction.objects.create(
+                        user=current_user,
+                        email=current_user.email,
+                        bundle_number=phone_number,
+                        offer=f"{amount}-{value}",
+                        reference=client_ref,
+                        transaction_status="Success"
+                    )
+                    new_mtn_bundle_transaction.save()
+                    return redirect('thank_you')
+                else:
+                    print(response.json())
+                    print("Not 200 error")
+                    new_mtn_bundle_transaction = models.MTNBundleTransaction.objects.create(
+                        user=current_user,
+                        email=current_user.email,
+                        bundle_number=phone_number,
+                        offer=f"{amount}-{value}",
+                        reference=client_ref,
+                        transaction_status="Failed"
+                    )
+                    new_mtn_bundle_transaction.save()
+                    return redirect("failed")
         else:
             new_mtn_bundle_transaction = models.MTNBundleTransaction.objects.create(
                 user=current_user,
@@ -259,7 +297,7 @@ def airtel_tigo(request):
                 client_ref = helper.ref_generator(2)
                 provider = "AirtelTigo Big Time Bundle"
 
-                return_url = f"https://www.bestpaygh.com/send_at_bundle/{client_ref}/{phone_number}/{amount}/{value}"
+                return_url = f"http://127.0.0.1:8000/send_at_bundle/{client_ref}/{phone_number}/{amount}/{value}"
 
                 response = helper.execute_payment(amount_to_be_charged, client_ref,
                                                   provider, return_url)
@@ -296,50 +334,69 @@ def send_at_bundle(request, client_ref, phone_number, amount, value):
                 content = json.loads(request["content"])
             except ValueError:
                 return redirect(
-                    f'https://www.bestpaygh.com/send_at_bundle/{client_ref}/'
+                    f'http://127.0.0.1:8000/send_at_bundle/{client_ref}/'
                     f'{phone_number}/{amount}/{value}')
             status = content["Status"]
             ref = content["Data"]["ClientReference"]
         except KeyError:
             return redirect("failed")
         if ref == client_ref and status == "Success":
-            url = "https://cs.hubtel.com/commissionservices/2016884/06abd92da459428496967612463575ca"
-            reference = f"\"{client_ref}\""
-
-            payload = "{\r\n    \"Destination\": " + phone_number + ",\r\n    \"Amount\": " + amount + ",\r\n    \"CallbackUrl\": \"https://webhook.site/33d27e7d-6dd5-4899-b702-6c9022bea8c7\",\r\n    \"ClientReference\": " + reference + ",\r\n    \"Extradata\" : {\r\n        \"bundle\" : " + value + "\r\n    }\r\n}\r\n"
-            headers = {
-                'Authorization': 'Basic VnY3MHhuTTplNTAzYzcyMGYzYzA0N2Q2ODNjYTM3MWQ5YWEwMDZkZg==',
-                'Content-Type': 'text/plain'
-            }
-
-            response = requests.request("POST", url, headers=headers, data=payload)
-
-            if response.status_code == 200:
-                desc = helper.airtime_description(client_ref=client_ref)
-                new_at_bundle_transaction = models.AirtelTigoBundleTransaction.objects.create(
-                    user=current_user,
-                    email=current_user.email,
-                    bundle_number=phone_number,
-                    offer=f"{amount}-{value}",
-                    reference=client_ref,
-                    transaction_status="Success",
-                    description=desc
-                )
-                new_at_bundle_transaction.save()
-                return redirect('thank_you')
+            momo_number = content["Data"]["CustomerPhoneNumber"]
+            amount = content["Data"]["Amount"]
+            payment_description = content["Data"]["Description"]
+            print(f"{status}--{ref}--{momo_number}--{amount}--{payment_description}")
+            payment = models.Payment.objects.filter(user=current_user, reference=client_ref, payment_visited=True)
+            if payment:
+                return redirect('intruder')
             else:
-                print(response.json())
-                print("Not 200 error")
-                new_at_bundle_transaction = models.AirtelTigoBundleTransaction.objects.create(
+                new_payment = models.Payment.objects.create(
                     user=current_user,
-                    email=current_user.email,
-                    bundle_number=phone_number,
-                    offer=f"{amount}-{value}",
                     reference=client_ref,
-                    transaction_status="Failed"
+                    payment_number=momo_number,
+                    amount=amount,
+                    payment_description=payment_description,
+                    transaction_status=status,
+                    payment_visited=True,
+                    message="Payment verified successfully",
                 )
-                new_at_bundle_transaction.save()
-                return redirect("failed")
+                new_payment.save()
+                url = "https://cs.hubtel.com/commissionservices/2016884/06abd92da459428496967612463575ca"
+                reference = f"\"{client_ref}\""
+
+                payload = "{\r\n    \"Destination\": " + str(phone_number) + ",\r\n    \"Amount\": " + str(amount) + ",\r\n    \"CallbackUrl\": \"https://webhook.site/33d27e7d-6dd5-4899-b702-6c9022bea8c7\",\r\n    \"ClientReference\": " + str(reference) + ",\r\n    \"Extradata\" : {\r\n        \"bundle\" : " + value + "\r\n    }\r\n}\r\n"
+                headers = {
+                    'Authorization': 'Basic VnY3MHhuTTplNTAzYzcyMGYzYzA0N2Q2ODNjYTM3MWQ5YWEwMDZkZg==',
+                    'Content-Type': 'text/plain'
+                }
+
+                response = requests.request("POST", url, headers=headers, data=payload)
+
+                if response.status_code == 200:
+                    desc = helper.airtime_description(client_ref=client_ref)
+                    new_at_bundle_transaction = models.AirtelTigoBundleTransaction.objects.create(
+                        user=current_user,
+                        email=current_user.email,
+                        bundle_number=phone_number,
+                        offer=f"{amount}-{value}",
+                        reference=client_ref,
+                        transaction_status="Success",
+                        description=desc
+                    )
+                    new_at_bundle_transaction.save()
+                    return redirect('thank_you')
+                else:
+                    print(response.json())
+                    print("Not 200 error")
+                    new_at_bundle_transaction = models.AirtelTigoBundleTransaction.objects.create(
+                        user=current_user,
+                        email=current_user.email,
+                        bundle_number=phone_number,
+                        offer=f"{amount}-{value}",
+                        reference=client_ref,
+                        transaction_status="Failed"
+                    )
+                    new_at_bundle_transaction.save()
+                    return redirect("failed")
         else:
             new_at_bundle_transaction = models.AirtelTigoBundleTransaction.objects.create(
                 user=current_user,

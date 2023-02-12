@@ -5,6 +5,7 @@ import secrets
 
 import requests
 from django.contrib import messages
+from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
@@ -53,7 +54,7 @@ def airtime(request):
                     "totalAmount": amount_to_be_charged,
                     "description": "Test",
                     "callbackUrl": 'https://webhook.site/d53f5c53-eaba-4139-ad27-fb05b0a7be7f',
-                    "returnUrl": f'https://www.bestpaygh.com/send_airtime/{reference}/{phone_number}/{amount}/{provider}',
+                    "returnUrl": f'http://127.0.0.1:8000/send_airtime/{reference}/{phone_number}/{amount}/{provider}',
                     "cancellationUrl": 'http://127.0.0.1:8000/services',
                     "merchantAccountNumber": "2017101",
                     "clientReference": reference
@@ -100,7 +101,7 @@ def send_airtime(request, phone_number, amount, provider, reference):
                 content = json.loads(request["content"])
             except ValueError:
                 return redirect(
-                    f'https://www.bestpaygh.com/send_airtime/{reference}/{phone_number}/{amount}/{provider}')
+                    f'http://127.0.0.1:8000/send_airtime/{reference}/{phone_number}/{amount}/{provider}')
             status = content["Status"]
             ref = content["Data"]["ClientReference"]
         except KeyError:
@@ -108,45 +109,64 @@ def send_airtime(request, phone_number, amount, provider, reference):
             return redirect("failed")
 
         if ref == reference and status == "Success":
-            reference = f"\"{reference}\""
-            payload = "{\r\n    \"Destination\": " + phone_number + ",\r\n    \"Amount\": " + amount + ",\r\n    \"CallbackUrl\": \"https://webhook.site/9125cb31-9481-47ad-972f-d1d7765a5957\",\r\n    \"ClientReference\": " + reference + "\r\n}"
-
-            airtime_headers = {
-                'Authorization': 'Basic VnY3MHhuTTplNTAzYzcyMGYzYzA0N2Q2ODNjYTM3MWQ5YWEwMDZkZg==',
-                'Content-Type': 'text/plain'
-            }
-
-            response = requests.request("POST", url, headers=airtime_headers, data=payload)
-            airtime_data = response.json()
-            print(airtime_data)
-            print(response.status_code)
-
-            if response.status_code == 200:
-                new_airtime_transaction = models.AirtimeTransaction.objects.create(
-                    user=current_user,
-                    email=current_user.email,
-                    airtime_number=phone_number,
-                    airtime_amount=amount,
-                    provider=airtime_provider,
-                    reference=reference,
-                    transaction_status="Success"
-                )
-                new_airtime_transaction.save()
-                return redirect('thank_you')
+            momo_number = content["Data"]["CustomerPhoneNumber"]
+            amount = content["Data"]["Amount"]
+            payment_description = content["Data"]["Description"]
+            print(f"{status}--{ref}--{momo_number}--{amount}--{payment_description}")
+            payment = models.Payment.objects.filter(user=current_user, reference=reference, payment_visited=True)
+            if payment:
+                return redirect('intruder')
             else:
-                print("not 200 error")
-                new_airtime_transaction = models.AirtimeTransaction.objects.create(
+                new_payment = models.Payment.objects.create(
                     user=current_user,
-                    email=current_user.email,
-                    airtime_number=phone_number,
-                    airtime_amount=amount,
-                    provider=airtime_provider,
-                    reference=f"{reference}-{datetime.now().strftime('%H%M%S')}-{phone_number}",
-                    transaction_status="Failed"
+                    reference=reference,
+                    payment_number=momo_number,
+                    amount=amount,
+                    payment_description=payment_description,
+                    transaction_status=status,
+                    payment_visited=True,
+                    message="Payment verified successfully",
                 )
-                new_airtime_transaction.save()
-                print("Last error")
-                return redirect("failed")
+                new_payment.save()
+                reference = f"\"{reference}\""
+                payload = "{\r\n    \"Destination\": " + str(phone_number) + ",\r\n    \"Amount\": " + str(amount) + ",\r\n    \"CallbackUrl\": \"https://webhook.site/9125cb31-9481-47ad-972f-d1d7765a5957\",\r\n    \"ClientReference\": " + str(reference) + "\r\n}"
+
+                airtime_headers = {
+                    'Authorization': 'Basic VnY3MHhuTTplNTAzYzcyMGYzYzA0N2Q2ODNjYTM3MWQ5YWEwMDZkZg==',
+                    'Content-Type': 'text/plain'
+                }
+
+                response = requests.request("POST", url, headers=airtime_headers, data=payload)
+                airtime_data = response.json()
+                print(airtime_data)
+                print(response.status_code)
+
+                if response.status_code == 200:
+                    new_airtime_transaction = models.AirtimeTransaction.objects.create(
+                        user=current_user,
+                        email=current_user.email,
+                        airtime_number=phone_number,
+                        airtime_amount=amount,
+                        provider=airtime_provider,
+                        reference=reference,
+                        transaction_status="Success"
+                    )
+                    new_airtime_transaction.save()
+                    return redirect('thank_you')
+                else:
+                    print("not 200 error")
+                    new_airtime_transaction = models.AirtimeTransaction.objects.create(
+                        user=current_user,
+                        email=current_user.email,
+                        airtime_number=phone_number,
+                        airtime_amount=amount,
+                        provider=airtime_provider,
+                        reference=f"{reference}-{datetime.now().strftime('%H%M%S')}-{phone_number}",
+                        transaction_status="Failed"
+                    )
+                    new_airtime_transaction.save()
+                    print("Last error")
+                    return redirect("failed")
         else:
             new_airtime_transaction = models.AirtimeTransaction.objects.create(
                 user=current_user,

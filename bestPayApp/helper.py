@@ -164,7 +164,7 @@ def airtime_description(client_ref):
     headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        "api-key": "8f56b7ea-e1d0-4ce7-ace0-162f7dc55a39"
+        "api-key": config("API_KEY")
     }
 
     token_id = "9125cb31-9481-47ad-972f-d1d7765a5957"

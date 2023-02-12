@@ -47,7 +47,7 @@ def send_other_mtn_bundle(request, client_ref, phone_number, amount, value):
     headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        "api-key": "8f56b7ea-e1d0-4ce7-ace0-162f7dc55a39"
+        "api-key": config('API_KEY')
     }
     webhook_response = requests.request("GET",
                                         "https://webhook.site/token/d53f5c53-eaba-4139-ad27-fb05b0a7be7f/"

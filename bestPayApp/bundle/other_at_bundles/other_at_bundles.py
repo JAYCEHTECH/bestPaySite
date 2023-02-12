@@ -182,7 +182,6 @@ def send_ishare_bundle(request, client_ref, phone_number, bundle):
         'Content-Type': 'application/json',
         "api-key": "8f56b7ea-e1d0-4ce7-ace0-162f7dc55a39"
     }
-    sleep(10)
     webhook_response = requests.request("GET",
                                         "https://webhook.site/token/d53f5c53-eaba-4139-ad27-fb05b0a7be7f/"
                                         "requests?sorting=newest",
@@ -244,7 +243,7 @@ def send_ishare_bundle(request, client_ref, phone_number, bundle):
                 })
 
                 headers = {
-                    'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI0YjJkOWE5Zi04OTQ0LTRhYTItYTAxYy01NmNlNTdmZWUwYmEiLCJhdXRob3JpdGllcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9BRE1JTiJ9XSwiaWF0IjoxNjc2MTg3ODcxLCJleHAiOjE2NzYyNDY0MDB9.v-7CXpnNvBuBlmsutVokygkL-NnUWYjSr9e9xe3whNgazHdwMlJdqkph-MDwScU6IsSuqSqEM5OXl8W6E2NUow',
+                    'Authorization': config("BEARER_TOKEN"),
                     'Content-Type': 'application/json'
                 }
 

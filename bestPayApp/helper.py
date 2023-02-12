@@ -3,6 +3,7 @@ import secrets
 from datetime import datetime
 
 import requests
+from decouple import config
 
 from bestPayApp import models
 
@@ -151,7 +152,7 @@ def execute_payment(amount_to_be_charged, client_ref, provider, return_url):
         "clientReference": client_ref
     })
     headers = {
-        'Authorization': 'Basic VnY3MHhuTTplNTAzYzcyMGYzYzA0N2Q2ODNjYTM3MWQ5YWEwMDZkZg==',
+        'Authorization': config("HUBTEL_API_KEY"),
         'Content-Type': 'application/json'
     }
 

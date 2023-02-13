@@ -200,6 +200,7 @@ def send_ishare_bundle(request, client_ref, phone_number, bundle):
         )
         new_intruder.save()
         return redirect('intruder')
+    sleep(10)
     current_user = request.user
     headers = {
         'Accept': 'application/json',

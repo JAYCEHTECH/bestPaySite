@@ -200,19 +200,23 @@ def send_ishare_bundle(request, client_ref, phone_number, bundle):
         )
         new_intruder.save()
         return redirect('intruder')
-    sleep(10)
     current_user = request.user
     headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
         "api-key": config("API_KEY"),
     }
+    sleep(10)
     webhook_response = requests.request("GET",
                                         "https://webhook.site/token/d53f5c53-eaba-4139-ad27-fb05b0a7be7f/"
                                         "requests?sorting=newest",
                                         headers=headers)
+    json_webhook_response = webhook_response.json()['data']
+    txns_list = []
+    for txn in json_webhook_response:
+        txns_list.append(txn)
 
-    for request in webhook_response.json()['data']:
+    for request in txns_list:
         try:
             try:
                 content = json.loads(request["content"])

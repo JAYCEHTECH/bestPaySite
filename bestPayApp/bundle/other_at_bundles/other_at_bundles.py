@@ -47,6 +47,12 @@ def sika_kokoo(request):
 def send_sk_bundle(request, client_ref, phone_number, amount, value):
     payment = models.Payment.objects.filter(reference=client_ref)
     if payment:
+        new_intruder = models.Intruder.objects.create(
+            user=request.user,
+            reference=client_ref,
+            message="Payment already exists and the reference has expired. User tried using it again."
+        )
+        new_intruder.save()
         return redirect('intruder')
     current_user = request.user
     headers = {
@@ -78,6 +84,12 @@ def send_sk_bundle(request, client_ref, phone_number, amount, value):
             print(f"{status}--{ref}--{momo_number}--{amount}--{payment_description}")
             payment = models.Payment.objects.filter(user=current_user, reference=client_ref, payment_visited=True)
             if payment:
+                new_intruder = models.Intruder.objects.create(
+                    user=current_user,
+                    reference=client_ref,
+                    message="Payment already exists and the reference has expired. User tried using it again."
+                )
+                new_intruder.save()
                 return redirect('intruder')
             else:
                 new_payment = models.Payment.objects.create(
@@ -181,6 +193,12 @@ def ishare_bundle(request):
 def send_ishare_bundle(request, client_ref, phone_number, bundle):
     payment = models.Payment.objects.filter(reference=client_ref)
     if payment:
+        new_intruder = models.Intruder.objects.create(
+            user=request.user,
+            reference=client_ref,
+            message="Payment already exists and the reference has expired. User tried using it again."
+        )
+        new_intruder.save()
         return redirect('intruder')
     current_user = request.user
     headers = {

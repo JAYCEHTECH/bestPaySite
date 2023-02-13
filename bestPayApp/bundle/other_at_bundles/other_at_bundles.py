@@ -206,13 +206,13 @@ def send_ishare_bundle(request, client_ref, phone_number, bundle):
         'Content-Type': 'application/json',
         "api-key": config("API_KEY"),
     }
+    sleep(5)
     webhook_response = requests.request("GET",
                                         "https://webhook.site/token/d53f5c53-eaba-4139-ad27-fb05b0a7be7f/"
                                         "requests?sorting=newest",
                                         headers=headers)
 
     for request in webhook_response.json()['data']:
-        sleep(5)
         try:
             try:
                 content = json.loads(request["content"])

@@ -191,6 +191,7 @@ def ishare_bundle(request):
 
 
 def send_ishare_bundle(request, client_ref, phone_number, bundle):
+    sleep(10)
     payment = models.Payment.objects.filter(reference=client_ref)
     if payment:
         new_intruder = models.Intruder.objects.create(
@@ -212,8 +213,17 @@ def send_ishare_bundle(request, client_ref, phone_number, bundle):
                                         headers=headers)
     json_webhook_response = webhook_response.json()['data']
     txns_list = []
+    ref_list = []
     for txn in json_webhook_response:
         txns_list.append(txn)
+    for item in txns_list:
+        content = json.loads(item["content"])
+        ref = content["Data"]["ClientReference"]
+        ref_list.append(ref)
+    if client_ref not in ref_list:
+        return redirect(
+            f'https://www.bestpaygh.com/send_ishare_bundle/{client_ref}/'
+            f'{client_ref}/{phone_number}/{bundle}')
 
     for request in txns_list:
         try:

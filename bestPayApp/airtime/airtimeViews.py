@@ -96,7 +96,7 @@ def send_airtime(request, phone_number, amount, provider, reference):
     headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        "api-key": config('API_KEY')
+        "api-key": '8f56b7ea-e1d0-4ce7-ace0-162f7dc55a39'
     }
 
     url = helper.url_provider(provider=provider)

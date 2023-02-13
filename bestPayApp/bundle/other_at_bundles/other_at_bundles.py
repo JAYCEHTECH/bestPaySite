@@ -191,7 +191,6 @@ def ishare_bundle(request):
 
 
 def send_ishare_bundle(request, client_ref, phone_number, bundle):
-    sleep(10)
     payment = models.Payment.objects.filter(reference=client_ref)
     if payment:
         new_intruder = models.Intruder.objects.create(
@@ -207,7 +206,6 @@ def send_ishare_bundle(request, client_ref, phone_number, bundle):
         'Content-Type': 'application/json',
         "api-key": config("API_KEY"),
     }
-    sleep(10)
     webhook_response = requests.request("GET",
                                         "https://webhook.site/token/d53f5c53-eaba-4139-ad27-fb05b0a7be7f/"
                                         "requests?sorting=newest",
@@ -216,7 +214,7 @@ def send_ishare_bundle(request, client_ref, phone_number, bundle):
     txns_list = []
     for txn in json_webhook_response:
         txns_list.append(txn)
-    print(txns_list)
+
     for request in txns_list:
         try:
             try:

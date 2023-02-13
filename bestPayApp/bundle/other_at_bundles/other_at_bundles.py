@@ -215,7 +215,7 @@ def send_ishare_bundle(request, client_ref, phone_number, bundle):
     txns_list = []
     for txn in json_webhook_response:
         txns_list.append(txn)
-
+    print(txns_list)
     for request in txns_list:
         try:
             try:

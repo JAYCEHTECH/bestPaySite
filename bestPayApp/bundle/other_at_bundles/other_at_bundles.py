@@ -191,6 +191,7 @@ def ishare_bundle(request):
 
 
 def send_ishare_bundle(request, client_ref, phone_number, bundle):
+    sleep(10)
     payment = models.Payment.objects.filter(reference=client_ref)
     if payment:
         new_intruder = models.Intruder.objects.create(

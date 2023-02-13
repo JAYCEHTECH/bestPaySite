@@ -177,7 +177,7 @@ def send_airtime(request, phone_number, amount, provider, reference):
                         airtime_number=phone_number,
                         airtime_amount=amount,
                         provider=airtime_provider,
-                        reference=f"{reference}-{datetime.now().strftime('%H%M%S')}-{phone_number}",
+                        reference=reference,
                         transaction_status="Failed"
                     )
                     new_airtime_transaction.save()

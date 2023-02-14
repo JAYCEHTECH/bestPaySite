@@ -191,7 +191,6 @@ def ishare_bundle(request):
 
 
 def send_ishare_bundle(request, client_ref, phone_number, bundle):
-    sleep(10)
     payment = models.Payment.objects.filter(reference=client_ref)
     if payment:
         new_intruder = models.Intruder.objects.create(
@@ -221,6 +220,7 @@ def send_ishare_bundle(request, client_ref, phone_number, bundle):
         ref = content["Data"]["ClientReference"]
         ref_list.append(ref)
     if client_ref not in ref_list:
+        sleep(10)
         return redirect(
             f'https://www.bestpaygh.com/send_ishare_bundle/{client_ref}/'
             f'{client_ref}/{phone_number}/{bundle}')

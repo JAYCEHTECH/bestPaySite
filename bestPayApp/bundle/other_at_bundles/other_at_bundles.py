@@ -219,6 +219,7 @@ def send_ishare_bundle(request, client_ref, phone_number, bundle):
         content = json.loads(item["content"])
         ref = content["Data"]["ClientReference"]
         ref_list.append(ref)
+    print(ref_list)
     if client_ref not in ref_list:
         print("checking again")
         return redirect(

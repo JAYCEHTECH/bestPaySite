@@ -223,7 +223,15 @@ def send_ishare_bundle(request, client_ref, phone_number, bundle):
         content_needed = content
         ref = content["Data"]["ClientReference"]
         status = content["Status"]
+        print(ref)
+        print(status)
         if ref == client_ref:
+            print("========================================================")
+            print("========================================================")
+            print("=======================Ref=================================")
+            print(ref)
+            print("=====================Client Ref================================")
+            print(client_ref)
             ref_needed = ref
             status_needed = status
 

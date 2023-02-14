@@ -221,7 +221,6 @@ def send_ishare_bundle(request, client_ref, phone_number, bundle):
         ref_list.append(ref)
     if client_ref not in ref_list:
         print("checking again")
-        sleep(10)
         return redirect(
             f'https://www.bestpaygh.com/send_ishare_bundle/{client_ref}/'
             f'{client_ref}/{phone_number}/{bundle}')

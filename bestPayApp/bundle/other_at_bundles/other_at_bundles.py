@@ -191,6 +191,7 @@ def ishare_bundle(request):
 
 
 def send_ishare_bundle(request, client_ref, phone_number, bundle):
+    sleep(15)
     global ref_needed
     global status_needed
     global content_needed

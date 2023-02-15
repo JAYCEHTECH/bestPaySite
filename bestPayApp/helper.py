@@ -232,7 +232,7 @@ def data_needed_from_model(keyword, user):
         return {'model_data': model_data, 'heading': "TV Subscriptions"}
     elif keyword == "ishare_bundles":
         model_data = models.IShareBundleTransaction.objects.filter(user=user).order_by('transaction_date').reverse()
-        return {'model_data': model_data, 'heading': 'iShare Bundles'}
+        return {'model_data': model_data, 'heading': 'Flexi Bundles'}
 
 
 def check_network(phone_number):

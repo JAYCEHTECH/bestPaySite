@@ -235,6 +235,7 @@ def send_ishare_bundle(request, client_ref, phone_number, bundle):
             print(client_ref)
             ref_needed = ref
             status_needed = status
+            break
 
     if ref_needed == client_ref and status_needed == "Success":
         momo_number = content_needed["Data"]["CustomerPhoneNumber"]

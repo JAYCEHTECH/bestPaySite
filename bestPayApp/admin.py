@@ -20,6 +20,7 @@ class CustomUserAdmin(UserAdmin):
 
 class PaymentAdmin(admin.ModelAdmin):
     list_display = ['user', 'payment_number', 'amount', 'reference', 'transaction_status', 'transaction_date']
+    search_fields = ['reference']
 
 
 class IntruderAdmin(admin.ModelAdmin):

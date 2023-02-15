@@ -319,7 +319,7 @@ def send_ishare_bundle(request, client_ref, phone_number, bundle):
                     email=current_user.email,
                     bundle_number=phone_number,
                     offer=f"{phone_number}-{bundle}MB",
-                    batch_id=top_batch_id,
+                    batch_id='failed',
                     reference=client_ref,
                     message="Airtime status code was not 200",
                     transaction_status="Failed"

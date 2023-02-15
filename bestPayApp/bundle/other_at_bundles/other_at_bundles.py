@@ -258,7 +258,7 @@ def send_ishare_bundle(request, client_ref, phone_number, bundle):
                 payment_number=momo_number,
                 amount=amount,
                 payment_description=payment_description,
-                transaction_status=status,
+                transaction_status=status_needed,
                 payment_visited=True,
                 message="Payment verified successfully",
             )

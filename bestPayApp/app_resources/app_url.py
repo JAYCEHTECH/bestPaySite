@@ -6,7 +6,7 @@ import json
 import requests
 
 
-def send_ishare_bundle(username, first_name, last_name, account_msisdn, user_number, email, client_ref, phone_number, bundle):
+def send_ishare_bundle(username, first_name, last_name, user_number, email, client_ref, phone_number, bundle):
     sleep(5)
     global ref_needed
     global status_needed
@@ -72,7 +72,7 @@ def send_ishare_bundle(username, first_name, last_name, account_msisdn, user_num
                 "accountNo": f"233{user_number}",
                 "accountFirstName": first_name,
                 "accountLastName": last_name,
-                "accountMsisdn": account_msisdn,
+                "accountMsisdn": phone_number,
                 "accountEmail": email,
                 "accountVoiceBalance": 0,
                 "accountDataBalance": float(bundle),

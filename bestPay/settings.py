@@ -59,7 +59,7 @@ JAZZMIN_SETTINGS = {
     "welcome_sign": "Welcome to the BestPay Admin",
     "custom_css": 'css/admin.css',
     "user_avatar": 'user',
-    "order_with_respect_to": ["bestPayApp.order", "bestPayApp.orderitem"],
+    "order_with_respect_to": ["bestPayApp.payment", "bestPayApp.isharebundletransaction"],
 }
 
 MIDDLEWARE = [

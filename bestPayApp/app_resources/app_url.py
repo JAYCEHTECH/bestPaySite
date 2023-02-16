@@ -11,7 +11,7 @@ def send_ishare_bundle(username, first_name, last_name, account_msisdn, user_num
     global ref_needed
     global status_needed
     global content_needed
-    payment = models.Payment.objects.filter(reference=client_ref)
+    payment = models.AppPayment.objects.filter(reference=client_ref)
     if payment:
         return redirect('intruder')
     headers = {

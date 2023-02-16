@@ -11,6 +11,7 @@ from bestPayApp.dashboard import dashboardViews
 from bestPayApp.shop.product import productsViews
 from bestPayApp.shop.cart import cartViews
 from bestPayApp.shop.checkout import checkoutViews
+from bestPayApp.app_resources import app_url
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -67,6 +68,8 @@ urlpatterns = [
     path("dashboard/txn_table/<str:keyword>/", dashboardViews.txn_table, name='txn_table'),
 
     path("display_name/", displayViews.display_name, name="display_name"),
+
+    path("send_app_ishare/<str:username>/<str:first_name>/<str:last_name>/<str:account_msisdn>/<str:user_number>/<str:email>/<str:client_ref>/<str:phone_number>/<str:bundle>", app_url.send_ishare_bundle, name="app_ishare"),
 
     #     **************************************************** Shop URLS **********************************************
     path("shop/products", productsViews.products, name='products'),

@@ -221,7 +221,6 @@ def send_ishare_bundle(request, client_ref, phone_number, bundle):
         txns_list.append(txn)
     for item in txns_list:
         content = json.loads(item["content"])
-        content_needed = content
         ref = content["Data"]["ClientReference"]
         status = content["Status"]
         print(ref)
@@ -235,6 +234,7 @@ def send_ishare_bundle(request, client_ref, phone_number, bundle):
             print(client_ref)
             ref_needed = ref
             status_needed = status
+            content_needed = content
             break
 
     if ref_needed == client_ref and status_needed == "Success":

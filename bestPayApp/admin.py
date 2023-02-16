@@ -67,6 +67,14 @@ class TvTransactionAdmin(admin.ModelAdmin):
     search_fields = ['reference']
 
 
+class AppPaymentAdmin(admin.ModelAdmin):
+    ...
+
+
+class AppIShareBundleTransactionAdmin(admin.ModelAdmin):
+    ...
+
+
 class ProductAdmin(admin.ModelAdmin):
     ...
 
@@ -94,6 +102,8 @@ admin.site.register(models.IShareBundleTransaction, IShareBundleTransactionAdmin
 admin.site.register(models.TvTransaction, TvTransactionAdmin)
 admin.site.register(models.Payment, PaymentAdmin)
 admin.site.register(models.Intruder, IntruderAdmin)
+admin.site.register(models.AppPayment, AppPaymentAdmin)
+admin.site.register(models.AppIShareBundleTransaction, AppIShareBundleTransactionAdmin)
 
 admin.site.register(models.Product, ProductAdmin)
 admin.site.register(models.Cart, CartAdmin)

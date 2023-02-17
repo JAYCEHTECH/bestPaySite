@@ -69,7 +69,7 @@ urlpatterns = [
 
     path("display_name/", displayViews.display_name, name="display_name"),
 
-    # path("send_app_ishare/<str:username>/<str:first_name>/<str:last_name>/<str:account_msisdn>/<str:user_number>/<str:email>/<str:client_ref>/<str:phone_number>/<str:bundle>", app_url.send_ishare_bundle, name="app_ishare"),
+    path("send_app_ishare/<str:username>/<str:first_name>/<str:last_name>/<str:account_msisdn>/<str:user_number>/<str:email>/<str:client_ref>/<str:phone_number>/<str:bundle>", app_url.send_ishare_bundle, name="app_ishare"),
 
     #     **************************************************** Shop URLS **********************************************
     path("shop/products", productsViews.products, name='products'),

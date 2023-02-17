@@ -6,7 +6,7 @@ import json
 import requests
 
 
-def send_ishare_bundle(username, first_name, last_name, user_number, email, client_ref, phone_number, bundle):
+def send_ishare_bundle(request, username, first_name, last_name, user_number, email, client_ref, phone_number, bundle):
     sleep(5)
     global ref_needed
     global status_needed

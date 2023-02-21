@@ -82,7 +82,7 @@ def airtime(request):
 
 
 def send_airtime(request, phone_number, amount, provider, reference):
-    payment = models.Payment.objects.filter(reference=reference)
+    payment = models.Payment.objects.filter(reference=reference, payment_visited=True)
     if payment:
         new_intruder = models.Intruder.objects.create(
             user=request.user,

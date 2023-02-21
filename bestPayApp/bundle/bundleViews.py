@@ -120,6 +120,7 @@ def send_voda_bundle(request, client_ref, phone_number, amount, value):
                 reference = f"\"{client_ref}\""
 
                 payload = "{\r\n    \"Destination\": " + str(phone_number) + ",\r\n    \"Amount\": " + str(amount) + ",\r\n    \"CallbackUrl\": \"https://webhook.site/33d27e7d-6dd5-4899-b702-6c9022bea8c7\",\r\n    \"ClientReference\": " + str(reference) + ",\r\n    \"Extradata\" : {\r\n        \"bundle\" : " + value + "\r\n    }\r\n}\r\n"
+
                 headers = {
                     'Authorization': config("HUBTEL_API_KEY"),
                     'Content-Type': 'text/plain'

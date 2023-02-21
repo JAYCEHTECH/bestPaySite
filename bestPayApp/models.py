@@ -139,7 +139,6 @@ class IShareBundleTransaction(models.Model):
 
 
 class AppIShareBundleTransaction(models.Model):
-    user = models.ForeignKey(CustomUser, null=True, blank=True, on_delete=models.CASCADE)
     username = models.CharField(max_length=250, null=False, blank=False)
     email = models.EmailField(max_length=250, null=False, blank=True)
     bundle_number = models.BigIntegerField(null=False, blank=False)

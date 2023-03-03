@@ -125,9 +125,9 @@ class IShareBundleForm(forms.Form):
     offers = forms.ChoiceField(choices=[(2, 'GH₵2 (500MB)'), (4, 'GH₵4 (1.0GB)'), (7, 'GH₵7 (2.0GB)'),
                                         (10, 'GH₵10 (3.0GB)'), (12, 'GH₵12 (4.0GB)'), (15, 'GH₵15 (5.0GB)'),
                                         (18, 'GH₵18 (6.0GB)'), (22, 'GH₵22 (7.0GB)'), (25, 'GH₵25 (8.0GB)'),
-                                        (20, 'GH₵20 (10GB)'), (45, 'GH₵45 (15GB)'), (40, 'GH₵40 (20GB)'),
-                                        (75, 'GH₵75 (25GB)'), (60, 'GH₵60 (30GB)'), (80, 'GH₵80 (40GB)'),
-                                        (100, 'GH₵100 (50GB)'), (200, 'GH₵200 (100GB)'), (560, 'GH₵560 (200GB)')],
+                                        (30, 'GH₵30 (10GB)'), (45, 'GH₵45 (15GB)'), (60, 'GH₵60 (20GB)'),
+                                        (75, 'GH₵75 (25GB)'), (90, 'GH₵90 (30GB)'), (120, 'GH₵120 (40GB)'),
+                                        (145, 'GH₵145 (50GB)'), (285, 'GH₵285 (100GB)'), (560, 'GH₵560 (200GB)')],
                                widget=forms.Select(attrs={'class': 'form-control airtime-input'}))
 
     def clean(self):

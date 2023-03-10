@@ -175,11 +175,10 @@ def ishare_bundle(request):
 
                 response = helper.execute_payment(amount, client_ref,
                                                   provider, return_url)
-                print(response.json())
-                data = response.json()
-                print(data)
-
                 try:
+                    print(response.json())
+                    data = response.json()
+                    print(data)
                     if data["status"] == "Success":
                         checkout = data['data']['checkoutUrl']
                         return redirect(checkout)

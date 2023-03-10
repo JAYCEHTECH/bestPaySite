@@ -179,11 +179,14 @@ def ishare_bundle(request):
                 data = response.json()
                 print(data)
 
-                if data["status"] == "Success":
-                    checkout = data['data']['checkoutUrl']
-                    return redirect(checkout)
-                else:
-                    return redirect('failed')
+                try:
+                    if data["status"] == "Success":
+                        checkout = data['data']['checkoutUrl']
+                        return redirect(checkout)
+                    else:
+                        return redirect('failed')
+                except ValueError:
+                    return HttpResponse("Something happened on our end. Try again later")    
         else:
             messages.warning(request, "Login to continue")
             return redirect('login')

@@ -53,8 +53,8 @@ def intruder(request):
     return render(request, "layouts/thief.html")
 
 
-
-
+def maintenance(request):
+    return render(request, "layouts/maintenance.html")
 
 
 

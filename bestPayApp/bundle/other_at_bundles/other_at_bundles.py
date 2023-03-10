@@ -186,7 +186,7 @@ def ishare_bundle(request):
                     else:
                         return redirect('failed')
                 except ValueError:
-                    return HttpResponse("Something happened on our end. Try again later")    
+                    return redirect("error")    
         else:
             messages.warning(request, "Login to continue")
             return redirect('login')

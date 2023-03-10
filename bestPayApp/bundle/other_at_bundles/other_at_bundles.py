@@ -177,6 +177,7 @@ def ishare_bundle(request):
                                                   provider, return_url)
                 print(response.json())
                 data = response.json()
+                print(data)
 
                 if data["status"] == "Success":
                     checkout = data['data']['checkoutUrl']

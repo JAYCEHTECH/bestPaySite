@@ -5,7 +5,7 @@ from time import sleep
 import requests
 from decouple import config
 from django.contrib import messages
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from bestPayApp.forms import SikaKokooBundleForm, IShareBundleForm
 from bestPayApp import helper, models
@@ -186,7 +186,7 @@ def ishare_bundle(request):
                     else:
                         return redirect('failed')
                 except ValueError:
-                    return HTTPResponse("Something happened on our end. Try again later")    
+                    return HttpResponse("Something happened on our end. Try again later")    
         else:
             messages.warning(request, "Login to continue")
             return redirect('login')

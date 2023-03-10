@@ -1,3 +1,4 @@
+from http.client import HTTPResponse
 import json
 from time import sleep
 
@@ -185,7 +186,7 @@ def ishare_bundle(request):
                     else:
                         return redirect('failed')
                 except ValueError:
-                    return HttpResponse("Something happened on our end. Try again later")    
+                    return HTTPResponse("Something happened on our end. Try again later")    
         else:
             messages.warning(request, "Login to continue")
             return redirect('login')

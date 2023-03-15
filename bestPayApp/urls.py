@@ -24,6 +24,7 @@ urlpatterns = [
     path("failed", views.failed, name="failed"),
     path("intruder", views.intruder, name="intruder"),
     path('error_occured', views.maintenance, name="error"),
+    path("privacy-policy", views.privacy, name="privacy-policy"),
 
     path("sign-up/", customAuthViews.sign_up, name="signup"),
     path("login/", customAuthViews.login_page, name="login"),

@@ -57,6 +57,8 @@ def maintenance(request):
     return render(request, "layouts/maintenance.html")
 
 
+def privacy_policy(request):
+    return render(request, "layouts/privacy.html")
 
 
 

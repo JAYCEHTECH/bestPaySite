@@ -91,6 +91,10 @@ a:hover {
   background-color: #0085FF !important;
 }
 
+.privacy-h{
+  color: #0085FF;
+}
+
 a.bg-primary:hover, a.bg-primary:focus {
   background-color: #0085FF !important;
 }

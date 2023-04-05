@@ -267,7 +267,7 @@ def send_ishare_bundle(request, client_ref, phone_number, bundle):
                 message="Payment verified successfully",
             )
             new_payment.save()
-            url = "https://lab.xardtek.com/npe/api/context/business/transaction/new-transaction"
+            url = "https://backend.boldassure.net:445/live/api/context/business/transaction/new-transaction"
 
             payload = json.dumps({
                 "accountNo": f"233{str(current_user.phone)}",

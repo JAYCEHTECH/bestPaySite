@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}API Documentation - Developers{% endblock title %}
+
+{% block content %}
+  <!-- Back to top button -->
+  <div class="back-to-top"></div>
+
+  <header>
+    {% include 'inc/navbar.html' %}
+
+    <div class="container mt-5">
+      <div class="page-banner">
+        <div class="row justify-content-center align-items-center h-100">
+          <div class="col-md-6">
+            <nav aria-label="Breadcrumb">
+              <ul class="breadcrumb justify-content-center py-0 bg-transparent">
+                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                <li class="breadcrumb-item active">API Documentation</li>
+              </ul>
+            </nav>
+            <h1 style="color: #8e8aad" class="text-center">API Documentation</h1>
+                                <div class="justify-content-center breadcrumb bg-transparent">
+                      <span class="breadcrumb-item active">Developers and Users Guide</span>
+                  </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="page-section px-2">
+      <div class="container">
+        <div class="row align-items-center">
+            <p class="mb-0">
+                This API is used in selling AirtelTigo bundles at a rate you choose. Read the documentation and
+                start using our services. <br> To generate or get an API Key, sign up and log in to the <a href="https://console.bestpaygh.com">console</a>. Go to the API section and click
+                on the generate key button. An API Key and a secret key will be generated for use.
+                <br><br><span class="fw-bold">NB:</span><span class="font-italic">Anytime you hit the generate key button, a new API Key and secret key are generated. You
+                    can always generate a new one if your Keys are compromised. Protect your keys since they
+                are the keys to your console transactions.</span>
+                <br> <br>
+            </p>
+
+            <hr class="hr">
+            <div>
+                <p style="word-wrap:break-word;">URL Endpoint: https://console.bestpaygh.com/api/flexi/v1</p>
+            </div>
+            <hr class="hr mt-0">
+
+            <div class="w-100">
+            <div class="w-100">
+                <div>
+                    <h5 class="mb-0" style="color: white"><span class="badge badge-pill badge-success">GET</span> <span class="mt-1">Get all transactions</span></h5>
+                </div>
+                <div style="display: inline-block; width: auto" class="mt-3 bg-success p-2 rounded">
+                    <p class="m-0 p-0 w-auto">URL Endpoint: /all_transactions/</p>
+                </div>
+
+                <div class="mt-3">
+                    <p>
+                        This endpoint takes the user’s API Key and Secret Key as headers. This endpoint has no body
+                        parameters to <set class="br"></set> Below is an example of what should go into the header. <br><br>
+
+                        “api-key”: &lt;API-KEY&gt; <br>
+                        “api-secret”: &lt;API-SECRET-KEY&gt; <br><br>
+
+                        The endpoint returns a list of all user transactions. <br>
+
+                        An empty list will be returned if the user has no transactions yet. <br><br>
+
+
+                        Possible error for this endpoint is a 401 Unauthorized error due to invalid API Key or Secret Key as
+                        well as a user Key marked as revoked
+                    </p>
+                </div>
+            </div>
+            <hr class="hr">
+            <div>
+                <div>
+                    <h5 class="mb-0" style="color: white"><span class="badge badge-pill badge-warning">POST</span> <span class="mt-1">Get Transaction Detail</span></h5>
+                </div>
+                <div style="width: auto; display: inline-block; background-color: #FFC36A" class="mt-3 p-2 rounded">
+                    <span style="color: white" class="m-0 p-0">URL Endpoint: /transaction_detail/&lt;reference&gt;/</span>
+                </div>
+
+                <div class="mt-3">
+                    <p>
+                        This endpoint takes the user’s API Key and Secret Key as headers. This endpoint has no body
+                        parameters to set. <br> Below is an example of what should go into the header. <br><br>
+
+                        “api-key”: &lt;API-KEY&gt; <br>
+                        “api-secret”: &lt;API-SECRET-KEY&gt; <br><br>
+
+                        The reference at the end of the url is the reference of the transaction you want to query to check if
+                        the transaction was successful or not. <br>
+
+                        The endpoint returns the transaction details if the transaction exists and the transaction went
+                        through successfully. <br><br>
+
+                        If the reference entered could not be found, a reference was not provided or the transaction
+                        related to the reference was not successful, it returns a 200 OK response containing these
+                        parameters: “code”, “error”, “message”, “status”. The “code” for all error transactions are “0001”.<br><br>
+
+
+                        Possible errors for this endpoint are:
+                        <ul style="color: white">
+                            <li>401 Unauthorized error due to invalid API Key or Secret Key as well as a user Key marked as
+                        revoked</li>
+                            <li>200 OK Query Failed error that comes up due to server errors</li>
+                        </ul>
+                    </p>
+                </div>
+            </div>
+
+            <hr class="hr">
+
+            <div>
+                <div>
+                    <h5 class="mb-0" style="color: white"><span class="badge badge-pill badge-warning">POST</span> <span class="mt-1">Make a transaction(Send Flexi Bundle)</span></h5>
+                </div>
+                <div style="width: auto; display: inline-block; background-color: #FFC36A" class="mt-3 p-2 rounded">
+                    <span style="color: white" class="m-0 p-0">URL Endpoint: /new_transaction/</span>
+                </div>
+
+                <div class="mt-3">
+                    <p>
+                        This endpoint takes the user’s API Key and Secret Key as headers. <br> Below is an example of what should go into the header. <br><br>
+
+                        “api-key”: &lt;API-KEY&gt; <br>
+                        “api-secret”: &lt;API-SECRET-KEY&gt; <br><br>
+
+                        This endpoint url requires body parameters. The parameters to be set in the body follows. <br>
+                    </p>
+                    
+                    <div class="mb-3">
+                        <img src="{% static 'img/site/Screenshot 2023-05-22 081409.png' %}" alt="">
+                    </div>
+
+                        
+                    <p>
+                        This endpoint could return a number of responses.<br>
+                        <ul style="color: white">
+                            <li>If the transaction was successful, it returns a response containing the “code”, “status”, “message” and “reference”. The “code” for a successful transaction is “0000”.</li>
+                            <li>The transaction might fail for a number of reasons which is returned in the response given. </li>
+                            <li>Any incomplete transaction will return a response with these parameters: “code”, “status”,
+                                “error”, “message”. The response will point out clearly what went wrong, so you can post a valid
+                                request the next time</li>
+                        </ul>
+                </div>
+            </div>
+
+            <hr class="hr">
+
+            <p>
+                All these can be done using the console by few clicks:
+                <ul style="color: white">
+                    <li> The transaction history section shows all the transactions made with your API Key~</li>
+                    <li>The Credit History section shows the top-ups you have made over time~</li>
+                    <li>The Query transaction section helps you to query a transaction using the reference to see if the
+                        transaction really went through or there was a problem with it.</li>
+                    <li>The Send Bundle section allows you to make a new transaction by providing the 10-digit
+customer number and the bundle amount you want to send.</li>
+                </ul>
+            </p>
+
+            </div>
+        </div>
+      </div> <!-- .container -->
+    </div> <!-- .page-section -->
+
+  </main>
+
+  {% include 'inc/footer.html' %}
+
+{% endblock %}

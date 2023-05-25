@@ -63,4 +63,7 @@ def privacy_policy(request):
     return render(request, "layouts/privacy.html")
 
 
+def api_documentation(request):
+    return render(request, "layouts/api-documentation.html")
+
 

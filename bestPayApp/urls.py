@@ -25,6 +25,7 @@ urlpatterns = [
     path("intruder", views.intruder, name="intruder"),
     path('error_occured', views.maintenance, name="error"),
     path("privacy-policy", views.privacy_policy, name="privacy-policy"),
+    path("developers/api-documentation", views.api_documentation, name="api"),
 
     path("sign-up/", customAuthViews.sign_up, name="signup"),
     path("login/", customAuthViews.login_page, name="login"),

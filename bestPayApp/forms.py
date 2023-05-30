@@ -121,14 +121,14 @@ class AirtelTigoBundleForm(forms.Form):
 
 
 class IShareBundleForm(forms.Form):
-    phone_number = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control airtime-input'}))
+    phone_number = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control airtime-input phone'}))
     offers = forms.ChoiceField(choices=[(2, 'GH₵2 (500MB)'), (4, 'GH₵4 (1.0GB)'), (7, 'GH₵7 (2.0GB)'),
                                         (10, 'GH₵10 (3.0GB)'), (12, 'GH₵12 (4.0GB)'), (15, 'GH₵15 (5.0GB)'),
                                         (18, 'GH₵18 (6.0GB)'), (22, 'GH₵22 (7.0GB)'), (25, 'GH₵25 (8.0GB)'),
                                         (30, 'GH₵30 (10GB)'), (45, 'GH₵45 (15GB)'), (60, 'GH₵60 (20GB)'),
                                         (75, 'GH₵75 (25GB)'), (90, 'GH₵90 (30GB)'), (120, 'GH₵120 (40GB)'),
                                         (145, 'GH₵145 (50GB)'), (285, 'GH₵285 (100GB)'), (560, 'GH₵560 (200GB)')],
-                               widget=forms.Select(attrs={'class': 'form-control airtime-input'}))
+                               widget=forms.Select(attrs={'class': 'form-control airtime-input i-offer'}))
 
     def clean(self):
         cleaned_data = super(IShareBundleForm, self).clean()

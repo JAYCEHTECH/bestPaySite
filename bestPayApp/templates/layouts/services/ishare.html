@@ -35,18 +35,21 @@
             {% for error in form.non_field_errors %}
                 <small style="display: block; color: red">{{ error }}</small>
             {% endfor %}
-            <form action="" method="post">
+            <form action="" method="post" id="paymentForm">
                 {% csrf_token %}
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label style="color: #fff"> Phone Number </label>
                             {{ form.phone_number }}
-                            <small style="color: #fff">Number must start with 233 and exclude 0 after 233. E.g. 2332XXXXXXXX"</small>
+                            <small style="color: #fff">Number must start with 233 and exclude 0 after 233. E.g., 2332XXXXXXXX"</small>
                         </div>
                         <div class="form-group col-md-6">
                             <label style="color: #fff"> Choose Offer </label>
                             {{ form.offers }}
                         </div>
+
+                        <input class="email" type="hidden" value="{{ email }}">
+                        <input class="reference" type="hidden" value="{{ ref }}">
 
                         <div class="col-md-12">
                           <p>Pay with</p>
@@ -55,7 +58,7 @@
                           <img src="{% static 'img/services/voca-fig.png' %}" alt=""> <span style="color: #F6F6F6">||</span>
                           <img src="{% static 'img/services/vima-fig.png' %}" alt="">
                         </div>
-                        <button type="submit" class="btn btn-outline-primary my-3">Checkout</button>
+                        <button type="submit" onclick="payWithPaystack()" class="btn btn-outline-primary my-3">Checkout</button>
                     </div>
             </form>
         </div>
@@ -64,4 +67,62 @@
 
 {% include 'inc/footer.html' %}
 
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        const paymentForm = document.getElementById('paymentForm');
+        let email = $(".email").val()
+        let ref = $(".reference").val()
+        console.log(email + ref)
+        paymentForm.addEventListener("submit", payWithPaystack, false);
+        function payWithPaystack(e) {
+            e.preventDefault();
+            let amount = $(".i-offer").val()
+            let phonenumber = $(".phone").val()
+            if (phonenumber.toString().length < 12 || phonenumber.toString().length != 12 || phonenumber.toString().length > 12){
+              Swal.fire({text: "Phone number must be 12 digits"})
+              return;
+            }
+
+            let handler = PaystackPop.setup({
+              key: 'pk_live_99e10d6f2512390f0960dbf9ac3a8163af13e275', // Replace with your public key
+              email: email,
+              amount: amount * 100,
+              currency: "GHS",
+              ref: ref, // generates a pseudo-unique reference. Please replace with a reference you generated. Or remove the line entirely so our API will generate one for you
+              // label: "Optional string that replaces customer email"
+              onClose: function(){
+                Swal.fire({text: "Transaction Closed"});
+                location.reload();
+              },
+              callback: function(response){
+                reference = response.reference
+                let message = 'Payment complete! Reference: ' + response.reference;
+                Swal.showLoading()
+                Swal.fire({
+                  title: "Sending Your Bundle",
+                  text: "Please Wait\n" + message,
+                  showConfirmButton: false,
+                });
+                Swal.showLoading()
+                $.ajax({
+                  url: 'http://127.0.0.1:8000/verify_transaction/' + reference + '/',
+                  method: 'get',
+                  success: function (response) {
+                    console.log(response.status)
+                    if (response.status === "success"){
+                      paymentForm.submit();
+                    } else{
+                      swal("Payment was not completed")
+                      location.reload()
+                    }
+                  }
+                });
+              }
+            });
+
+          handler.openIframe();
+        }
+    </script>
 {% endblock %}

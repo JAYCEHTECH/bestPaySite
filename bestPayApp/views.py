@@ -1,5 +1,7 @@
 import requests
 from django.shortcuts import render, redirect
+
+from bestPayApp import helper
 from bestPayApp.forms import SendMessageForm
 from django.http import HttpResponse, JsonResponse
 
@@ -65,5 +67,16 @@ def privacy_policy(request):
 
 def api_documentation(request):
     return render(request, "layouts/api-documentation.html")
+
+
+def verify_transaction(request, reference):
+    if request.method == "GET":
+        response = helper.verify_paystack_transaction(reference)
+        data = response.json()
+        try:
+            status = data["data"]["status"]
+        except:
+            status = data["status"]
+        return JsonResponse({'status': status})
 
 

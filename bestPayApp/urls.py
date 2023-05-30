@@ -88,4 +88,6 @@ urlpatterns = [
     path("place_order/<str:client_ref>/<str:first_name>/<str:last_name>/<str:email>/<str:phone>/<str:address>",
          checkoutViews.place_order, name="place-order"),
 
+    path('verify_transaction/<str:reference>/', views.verify_transaction, name="verify_transaction")
+
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

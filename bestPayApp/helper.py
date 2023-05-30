@@ -56,6 +56,100 @@ other_mtn_codes = {
 }
 
 
+def send_ishare_bundle(current_user, phone_number, bundle):
+    url = "https://backend.boldassure.net:445/live/api/context/business/transaction/new-transaction"
+
+    payload = json.dumps({
+        "accountNo": f"233{str(current_user.phone)}",
+        "accountFirstName": current_user.first_name,
+        "accountLastName": current_user.last_name,
+        "accountMsisdn": str(phone_number),
+        "accountEmail": current_user.email,
+        "accountVoiceBalance": 0,
+        "accountDataBalance": float(bundle),
+        "accountCashBalance": 0,
+        "active": True
+    })
+
+    headers = {
+        'Authorization': config("BEARER_TOKEN"),
+        'Content-Type': 'application/json'
+    }
+
+    response = requests.request("POST", url, headers=headers, data=payload)
+    print(response.json())
+    return response
+
+    # if response.status_code == 200:
+    #     data = response.json()
+    #     print(data)
+    #     batch_id = data["batchId"]
+    #     print(type(batch_id))
+    #     print(batch_id)
+    #
+    #     new_ishare_bundle_transaction = models.IShareBundleTransaction.objects.create(
+    #         user=current_user,
+    #         email=current_user.email,
+    #         bundle_number=phone_number,
+    #         offer=f"{phone_number}-{bundle}",
+    #         batch_id=batch_id,
+    #         reference=client_ref,
+    #         transaction_status="Success",
+    #     )
+    #     new_ishare_bundle_transaction.save()
+    #     receiver_message = f"Your bundle purchase has been completed successfully. {bundle}MB has been credited to you by {current_user.phone}.\nReference: {batch_id}\n"
+    #     sms_message = f"Hello @{current_user.username}. Your bundle purchase has been completed successfully. {bundle}MB has been credited to {phone_number}.\nReference: {batch_id}\nThank you for using BestPay.\n\nThe BestPayTeam."
+    #     sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to=0{current_user.phone}&from=BESTPAY GH&sms={sms_message}"
+    #     response = requests.request("GET", url=sms_url)
+    #     print(response.status_code)
+    #     print(response.text)
+    #     r_sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to={phone_number}&from=Bundle&sms={receiver_message}"
+    #     response = requests.request("GET", url=r_sms_url)
+    #     print(response.text)
+    #     return redirect('thank_you')
+    # else:
+    #     new_ishare_bundle_transaction = models.IShareBundleTransaction.objects.create(
+    #         user=current_user,
+    #         email=current_user.email,
+    #         bundle_number=phone_number,
+    #         offer=f"{phone_number}-{bundle}MB",
+    #         batch_id='failed',
+    #         reference=client_ref,
+    #         message="Airtime status code was not 200",
+    #         transaction_status="Failed"
+    #     )
+    #     new_ishare_bundle_transaction.save()
+    #     print(response.json())
+    #     print("Not 200 error")
+    #     sms_message = f"Hello @{current_user.username}. Your bundle purchase was not successful. You tried crediting {phone_number} with {bundle}MB.\nReference:{top_batch_id}\nContact Support for assistance.\n\nThe BestPayTeam."
+    #     sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to=0{current_user.phone}&from=BESTPAY GH&sms={sms_message}"
+    #     response = requests.request("GET", url=sms_url)
+    #     print(response.status_code)
+    #     print(response.text)
+    #     return redirect("failed")
+
+
+def paystack_ref_generator():
+    now_time = datetime.now().strftime('%H%M%S')
+    secret = secrets.token_hex(2)
+
+    return f"{now_time}{secret}".upper()
+
+
+def verify_paystack_transaction(reference):
+    url = f"https://api.paystack.co/transaction/verify/{reference}"
+
+    headers = {
+        "Authorization": config("PAYSTACK_SECRET_KEY")
+    }
+
+    response = requests.request("GET", url, headers=headers)
+
+    print(response.json())
+
+    return response
+
+
 def generate_amount_for_other_mtn_codes(code):
     if code == '1.09':
         return 1.09

@@ -164,6 +164,7 @@ def ishare_bundle(request):
     reference = helper.paystack_ref_generator()
     user_email = request.user.email
     if request.method == "POST":
+        reference = helper.ref_generator(2)
         form = IShareBundleForm(request.POST)
         if form.is_valid():
             phone_number = form.cleaned_data["phone_number"]
@@ -183,6 +184,7 @@ def ishare_bundle(request):
                     email=current_user.email,
                     bundle_number=phone_number,
                     offer=f"{bundle}MB",
+                    reference=reference,
                     batch_id=batch_id,
                     transaction_status="Completed",
                 )
@@ -203,6 +205,7 @@ def ishare_bundle(request):
                     email=current_user.email,
                     bundle_number=phone_number,
                     offer=f"{bundle}MB",
+                    reference=reference,
                     batch_id='failed',
                     message="Status code was not 200",
                     transaction_status="Failed"

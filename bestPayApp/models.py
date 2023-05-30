@@ -21,12 +21,11 @@ class Payment(models.Model):
     amount = models.FloatField(null=True, blank=True)
     payment_description = models.CharField(max_length=500, null=True, blank=True)
     transaction_status = models.CharField(max_length=256, null=True, blank=True)
-    transaction_date = models.DateTimeField(auto_now_add=True)
+    transaction_date = models.CharField(null=True, blank=True)
     message = models.CharField(max_length=500, null=True, blank=True)
-    payment_visited = models.BooleanField(blank=False, null=False)
 
     def __str__(self):
-        return f"{self.user.username} - {self.payment_number} - {self.reference}"
+        return f"{self.user.username} - {self.reference}"
 
 
 class AppPayment(models.Model):

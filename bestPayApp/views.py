@@ -1,7 +1,7 @@
 import requests
 from django.shortcuts import render, redirect
 
-from bestPayApp import helper
+from bestPayApp import helper, models
 from bestPayApp.forms import SendMessageForm
 from django.http import HttpResponse, JsonResponse
 
@@ -75,8 +75,27 @@ def verify_transaction(request, reference):
         data = response.json()
         try:
             status = data["data"]["status"]
+            amount = data["data"]["amount"]
+            api_reference = data["data"]["reference"]
+            date = data["data"]["paid_at"]
+            real_amount = float(amount) / 100
+
+            new_payment = models.Payment.objects.create(
+                user=request.user,
+                transaction_status=status,
+                amount=real_amount,
+                reference=api_reference,
+                transaction_date=date
+            )
+            new_payment.save()
         except:
             status = data["status"]
+            new_payment = models.Payment.objects.create(
+                user=request.user,
+                transaction_status=status,
+                reference=reference
+            )
+            new_payment.save()
         return JsonResponse({'status': status})
 
 

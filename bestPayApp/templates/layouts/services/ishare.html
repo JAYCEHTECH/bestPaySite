@@ -112,7 +112,12 @@
                   success: function (response) {
                     console.log(response.status)
                     if (response.status === "success"){
-                      paymentForm.submit();
+                        let x = document.createElement("INPUT")
+                        x.setAttribute("type", "hidden")
+                        x.setAttribute("name", "reference_field")
+                        x.setAttribute("value", reference)
+                        paymentForm.appendChild(x)
+                        paymentForm.submit();
                     } else{
                       swal("Payment was not completed")
                       location.reload()

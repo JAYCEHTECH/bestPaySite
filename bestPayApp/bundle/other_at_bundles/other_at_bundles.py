@@ -161,15 +161,15 @@ def send_sk_bundle(request, client_ref, phone_number, amount, value):
 def ishare_bundle(request):
     current_user = request.user
     form = IShareBundleForm()
-    reference = helper.paystack_ref_generator()
+    reference = helper.ref_generator(2)
     user_email = request.user.email
     if request.method == "POST":
-        reference = helper.ref_generator(2)
         form = IShareBundleForm(request.POST)
         if form.is_valid():
             phone_number = form.cleaned_data["phone_number"]
             offer_chosen = form.cleaned_data["offers"]
             amount = float(offer_chosen)
+            reference = request.POST.get("reference_field")
 
             ishare_map = helper.ishare_map
             bundle = ishare_map[amount]

@@ -98,13 +98,12 @@
               },
               callback: function(response){
                 reference = response.reference
-                let message = 'Payment complete! Reference: ' + response.reference;
-                Swal.showLoading()
-                Swal.fire({
-                  title: "Sending Your Bundle",
-                  text: "Please Wait\n" + message,
-                  showConfirmButton: false,
-                });
+                // let message = 'Payment complete! Reference: ' + response.reference;
+                // Swal.fire({
+                //  title: "Sending Your Bundle",
+                //  text: "Please Wait\n" + message,
+                //  showConfirmButton: false,
+                // });
                 Swal.showLoading()
                 $.ajax({
                   url: 'https://www.bestpaygh.com/verify_transaction/' + reference + '/',

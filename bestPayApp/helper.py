@@ -137,6 +137,7 @@ def paystack_ref_generator():
 
 
 def verify_paystack_transaction(reference):
+    print("verifying")
     url = f"https://api.paystack.co/transaction/verify/{reference}"
 
     headers = {

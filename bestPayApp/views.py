@@ -71,9 +71,11 @@ def api_documentation(request):
 
 def verify_transaction(request, reference):
     if request.method == "GET":
+        print("got here")
         response = helper.verify_paystack_transaction(reference)
         data = response.json()
         try:
+            print("got into the try")
             status = data["data"]["status"]
             amount = data["data"]["amount"]
             api_reference = data["data"]["reference"]
@@ -89,6 +91,7 @@ def verify_transaction(request, reference):
             )
             new_payment.save()
         except:
+            print("got into the except")
             status = data["status"]
             new_payment = models.Payment.objects.create(
                 user=request.user,

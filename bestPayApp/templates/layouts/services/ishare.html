@@ -101,7 +101,7 @@
                 let message = 'Payment complete! Reference: ' + response.reference;
                 Swal.fire({
                  title: "Click on Continue",
-                 text: message,
+                 html: '<p>' + message + '<br/> Please wait after clicking Continue for a response</p>',
                  confirmButtonText: "Continue",
                 }).then((result) => {
                     Swal.showLoading();

@@ -98,31 +98,32 @@
               },
               callback: function(response){
                 reference = response.reference
-                // let message = 'Payment complete! Reference: ' + response.reference;
-                // Swal.fire({
-                //  title: "Sending Your Bundle",
-                //  text: "Please Wait\n" + message,
-                //  showConfirmButton: false,
-                // });
-                Swal.showLoading()
-                $.ajax({
-                  url: 'https://www.bestpaygh.com/verify_transaction/' + reference + '/',
-                  method: 'get',
-                  success: function (response) {
-                    console.log(response.status)
-                    if (response.status === "success"){
-                        let x = document.createElement("INPUT")
-                        x.setAttribute("type", "hidden")
-                        x.setAttribute("name", "reference_field")
-                        x.setAttribute("value", reference)
-                        paymentForm.appendChild(x)
-                        paymentForm.submit();
-                    } else{
-                      swal("Payment was not completed")
-                      location.reload()
-                    }
-                  }
-                });
+                let message = 'Payment complete! Reference: ' + response.reference;
+                Swal.fire({
+                 title: "Click on Continue",
+                 text: message,
+                 confirmButtonText: "Continue",
+                }).then((result) => {
+                    Swal.showLoading();
+                    $.ajax({
+                      url: 'https://www.bestpaygh.com/verify_transaction/' + reference + '/',
+                      method: 'get',
+                      success: function (response) {
+                        console.log(response.status)
+                        if (response.status === "success"){
+                            let x = document.createElement("INPUT")
+                            x.setAttribute("type", "hidden")
+                            x.setAttribute("name", "reference_field")
+                            x.setAttribute("value", reference)
+                            paymentForm.appendChild(x)
+                            paymentForm.submit();
+                        } else{
+                          swal("Payment was not completed")
+                          location.reload()
+                        }
+                      }
+                    });
+                })
               }
             });
 

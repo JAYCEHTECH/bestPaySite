@@ -14,6 +14,13 @@ class CustomUser(AbstractUser):
     password2 = models.CharField(max_length=100, null=False, blank=False)
 
 
+class Site(models.Model):
+    status = models.BooleanField(null=True, blank=True)
+
+    def __str__(self):
+        return str(self.status)
+
+
 class Payment(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     reference = models.CharField(max_length=256, null=False, blank=False)

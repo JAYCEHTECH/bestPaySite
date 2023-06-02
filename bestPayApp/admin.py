@@ -104,6 +104,7 @@ admin.site.register(models.Payment, PaymentAdmin)
 admin.site.register(models.Intruder, IntruderAdmin)
 admin.site.register(models.AppPayment)
 admin.site.register(models.AppIShareBundleTransaction)
+admin.site.register(models.Site)
 
 admin.site.register(models.Product, ProductAdmin)
 admin.site.register(models.Cart, CartAdmin)

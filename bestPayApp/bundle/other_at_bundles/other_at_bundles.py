@@ -159,70 +159,73 @@ def send_sk_bundle(request, client_ref, phone_number, amount, value):
 
 @login_required(login_url='login')
 def ishare_bundle(request):
-    current_user = request.user
-    form = IShareBundleForm()
-    reference = helper.ref_generator(2)
-    user_email = request.user.email
-    if request.method == "POST":
-        form = IShareBundleForm(request.POST)
-        if form.is_valid():
-            phone_number = form.cleaned_data["phone_number"]
-            offer_chosen = form.cleaned_data["offers"]
-            amount = float(offer_chosen)
-            reference = request.POST.get("reference_field")
+    status = models.Site.objects.filter(status=True).first()
+    if status:
+        current_user = request.user
+        form = IShareBundleForm()
+        reference = helper.ref_generator(2)
+        user_email = request.user.email
+        if request.method == "POST":
+            form = IShareBundleForm(request.POST)
+            if form.is_valid():
+                phone_number = form.cleaned_data["phone_number"]
+                offer_chosen = form.cleaned_data["offers"]
+                amount = float(offer_chosen)
+                reference = request.POST.get("reference_field")
 
-            ishare_map = helper.ishare_map
-            bundle = ishare_map[amount]
+                ishare_map = helper.ishare_map
+                bundle = ishare_map[amount]
 
-            send_bundle_response = helper.send_ishare_bundle(request.user, phone_number, bundle)
+                send_bundle_response = helper.send_ishare_bundle(request.user, phone_number, bundle)
 
-            if send_bundle_response.status_code == 200:
-                data = send_bundle_response.json()
-                batch_id = data["batchId"]
-                new_ishare_bundle_transaction = models.IShareBundleTransaction.objects.create(
-                    user=current_user,
-                    email=current_user.email,
-                    bundle_number=phone_number,
-                    offer=f"{bundle}MB",
-                    reference=reference,
-                    batch_id=batch_id,
-                    transaction_status="Completed",
-                )
-                new_ishare_bundle_transaction.save()
-                receiver_message = f"Your bundle purchase has been completed successfully. {bundle}MB has been credited to you by {current_user.phone}.\nReference: {batch_id}\n"
-                sms_message = f"Hello @{current_user.username}. Your bundle purchase has been completed successfully. {bundle}MB has been credited to {phone_number}.\nReference: {batch_id}\nThank you for using BestPay.\n\nThe BestPayTeam."
-                sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to=0{current_user.phone}&from=BESTPAY GH&sms={sms_message}"
-                response = requests.request("GET", url=sms_url)
-                print(response.status_code)
-                print(response.text)
-                r_sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to={phone_number}&from=Bundle&sms={receiver_message}"
-                response = requests.request("GET", url=r_sms_url)
-                print(response.text)
-                return redirect('thank_you')
+                if send_bundle_response.status_code == 200:
+                    data = send_bundle_response.json()
+                    batch_id = data["batchId"]
+                    new_ishare_bundle_transaction = models.IShareBundleTransaction.objects.create(
+                        user=current_user,
+                        email=current_user.email,
+                        bundle_number=phone_number,
+                        offer=f"{bundle}MB",
+                        reference=reference,
+                        batch_id=batch_id,
+                        transaction_status="Completed",
+                    )
+                    new_ishare_bundle_transaction.save()
+                    receiver_message = f"Your bundle purchase has been completed successfully. {bundle}MB has been credited to you by {current_user.phone}.\nReference: {batch_id}\n"
+                    sms_message = f"Hello @{current_user.username}. Your bundle purchase has been completed successfully. {bundle}MB has been credited to {phone_number}.\nReference: {batch_id}\nThank you for using BestPay.\n\nThe BestPayTeam."
+                    sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to=0{current_user.phone}&from=BESTPAY GH&sms={sms_message}"
+                    response = requests.request("GET", url=sms_url)
+                    print(response.status_code)
+                    print(response.text)
+                    r_sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to={phone_number}&from=Bundle&sms={receiver_message}"
+                    response = requests.request("GET", url=r_sms_url)
+                    print(response.text)
+                    return redirect('thank_you')
+                else:
+                    new_ishare_bundle_transaction = models.IShareBundleTransaction.objects.create(
+                        user=current_user,
+                        email=current_user.email,
+                        bundle_number=phone_number,
+                        offer=f"{bundle}MB",
+                        reference=reference,
+                        batch_id='failed',
+                        message="Status code was not 200",
+                        transaction_status="Failed"
+                    )
+                    new_ishare_bundle_transaction.save()
+                    print("Not 200 error")
+                    sms_message = f"Hello @{current_user.username}. Your bundle purchase was not successful. You tried crediting {phone_number} with {bundle}MB.\nReference:{top_batch_id}\nContact Support for assistance.\n\nThe BestPayTeam."
+                    sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to=0{current_user.phone}&from=BESTPAY GH&sms={sms_message}"
+                    response = requests.request("GET", url=sms_url)
+                    print(response.status_code)
+                    print(response.text)
+                    return redirect("failed")
             else:
-                new_ishare_bundle_transaction = models.IShareBundleTransaction.objects.create(
-                    user=current_user,
-                    email=current_user.email,
-                    bundle_number=phone_number,
-                    offer=f"{bundle}MB",
-                    reference=reference,
-                    batch_id='failed',
-                    message="Status code was not 200",
-                    transaction_status="Failed"
-                )
-                new_ishare_bundle_transaction.save()
-                print("Not 200 error")
-                sms_message = f"Hello @{current_user.username}. Your bundle purchase was not successful. You tried crediting {phone_number} with {bundle}MB.\nReference:{top_batch_id}\nContact Support for assistance.\n\nThe BestPayTeam."
-                sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to=0{current_user.phone}&from=BESTPAY GH&sms={sms_message}"
-                response = requests.request("GET", url=sms_url)
-                print(response.status_code)
-                print(response.text)
-                return redirect("failed")
-        else:
-            return redirect('ishare_bundle')
-    context = {'form': form, "ref": reference, "email": user_email}
-    return render(request, 'layouts/services/ishare.html', context=context)
-
+                return redirect('ishare_bundle')
+        context = {'form': form, "ref": reference, "email": user_email}
+        return render(request, 'layouts/services/ishare.html', context=context)
+    else:
+        return render(request, "layouts/maintenance.html")
 
 def send_ishare_bundle(request, client_ref, phone_number, bundle):
     sleep(5)

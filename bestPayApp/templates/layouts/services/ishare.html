@@ -35,7 +35,7 @@
             {% for error in form.non_field_errors %}
                 <small style="display: block; color: red">{{ error }}</small>
             {% endfor %}
-            <form action="" method="post" id="paymentForm">
+            <form id="paymentForm">
                 {% csrf_token %}
                     <div class="form-row">
                         <div class="form-group col-md-6">
@@ -58,7 +58,7 @@
                           <img src="{% static 'img/services/voca-fig.png' %}" alt=""> <span style="color: #F6F6F6">||</span>
                           <img src="{% static 'img/services/vima-fig.png' %}" alt="">
                         </div>
-                        <button type="submit" onclick="payWithPaystack()" class="btn btn-outline-primary my-3">Checkout</button>
+                        <button onclick="payWithPaystack()" class="btn btn-outline-primary my-3">Checkout</button>
                     </div>
             </form>
         </div>
@@ -97,33 +97,31 @@
                 location.reload();
               },
               callback: function(response){
+                Swal.fire({text: "Processing your order."})
+                Swal.showLoading()
+                let token = $("input[name=csrfmiddlewaretoken]").val();
                 reference = response.reference
-                let message = 'Payment complete! Reference: ' + response.reference;
-                Swal.fire({
-                 title: "Click on Continue",
-                 html: '<p>' + message + '<br/> Please wait after clicking Continue for a response</p>',
-                 confirmButtonText: "Continue",
-                }).then((result) => {
-                    Swal.showLoading();
-                    $.ajax({
-                      url: 'https://www.bestpaygh.com/verify_transaction/' + reference + '/',
-                      method: 'get',
-                      success: function (response) {
-                        console.log(response.status)
-                        if (response.status === "success"){
-                            let x = document.createElement("INPUT")
-                            x.setAttribute("type", "hidden")
-                            x.setAttribute("name", "reference_field")
-                            x.setAttribute("value", reference)
-                            paymentForm.appendChild(x)
-                            paymentForm.submit();
-                        } else{
-                          swal("Payment was not completed")
-                          location.reload()
-                        }
-                      }
-                    });
+                $.ajax({
+                  url: '/ishare/',
+                  method: "POST",
+                  data: {
+                    phone: phonenumber,
+                    amount: amount,
+                    reference: reference,
+                    csrfmiddlewaretoken: token,
+                  },
+                  success: function(response){
+                    Swal.fire({text: response.status, icon:response.icon, confirmButtonText:"Okay"}).then((value) => {
+                      location.reload()
+                    })
+                  }
                 })
+                //let x = document.createElement("INPUT")
+                //x.setAttribute("type", "hidden")
+                //x.setAttribute("name", "reference_field")
+                //x.setAttribute("value", reference)
+                //paymentForm.appendChild(x)
+                //paymentForm.submit();
               }
             });
 

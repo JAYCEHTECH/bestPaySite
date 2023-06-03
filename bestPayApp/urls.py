@@ -57,7 +57,7 @@ urlpatterns = [
     path("services/bundles/airtel-tigo/sika-kokoo", other_at_bundles.sika_kokoo, name="at-sika-kokoo"),
     path("send_sk_bundle/<str:client_ref>/<str:phone_number>/<str:amount>/<str:value>",
          other_at_bundles.send_sk_bundle, name="send_sk_bundle"),
-    path("services/bundles/ishare", other_at_bundles.ishare_bundle, name="ishare_bundle"),
+    path("ishare/", other_at_bundles.ishare_bundle, name="ishare_bundle"),
     path("send_ishare_bundle/<str:client_ref>/<str:phone_number>/<str:bundle>", other_at_bundles.send_ishare_bundle, name="send_ishare_bundle"),
 
     path("services/tv", tvViews.tv_all, name="tv"),

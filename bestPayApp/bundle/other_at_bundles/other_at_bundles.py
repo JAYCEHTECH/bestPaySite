@@ -195,7 +195,7 @@ def ishare_bundle(request):
                 new_ishare_bundle_transaction.save()
                 new_payment = models.Payment.objects.create(
                     user=request.user,
-                    transaction_status="Staus",
+                    transaction_status="Status",
                     amount=amount,
                     reference=reference,
                     transaction_date=datetime.now()

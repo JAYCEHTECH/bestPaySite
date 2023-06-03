@@ -210,8 +210,8 @@ def ishare_bundle(request):
                 r_sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to={phone_number}&from=Bundle&sms={receiver_message}"
                 response = requests.request("GET", url=r_sms_url)
                 print(response.text)
-                return redirect("thank_you")
-                #return JsonResponse({'status': "Transaction completed Successfully", "icon": "success"})
+                #return redirect("thank_you")
+                return JsonResponse({'status': "Transaction completed Successfully", "icon": "success"})
             else:
                 new_ishare_bundle_transaction = models.IShareBundleTransaction.objects.create(
                     user=current_user,
@@ -238,8 +238,8 @@ def ishare_bundle(request):
                 response = requests.request("GET", url=sms_url)
                 print(response.status_code)
                 print(response.text)
-                return redirect("failed")
-                #return JsonResponse({'status': "Transaction Failed", "icon": "error"})
+                #return redirect("failed")
+                return JsonResponse({'status': "Transaction Failed", "icon": "error"})
         context = {'form': form, "ref": reference, "email": user_email}
         return render(request, 'layouts/services/ishare.html', context=context)
     else:

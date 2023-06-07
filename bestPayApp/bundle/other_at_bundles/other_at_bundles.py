@@ -167,17 +167,18 @@ def ishare_bundle(request):
         reference = helper.ref_generator(2)
         user_email = request.user.email
         if request.method == "POST":
+            phone_number = request.POST.get("phone")
+            amount = float(request.POST.get("amount"))
+            reference = request.POST.get("reference")
             new_payment = models.Payment.objects.create(
                 user=request.user,
-                transaction_status="Status",
+                transaction_status="Completed",
                 amount=amount,
                 reference=reference,
                 transaction_date=datetime.now()
             )
             new_payment.save()
-            phone_number = request.POST.get("phone")
-            amount = float(request.POST.get("amount"))
-            reference = request.POST.get("reference")
+
             ishare_map = helper.ishare_map
             bundle = ishare_map[amount]
 

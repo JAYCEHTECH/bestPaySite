@@ -199,6 +199,7 @@ def ishare_bundle(request):
                 data = send_bundle_response.json()
                 batch_id = data["batchId"]
                 transaction_to_be_updated = models.IShareBundleTransaction.objects.get(reference=reference)
+                print(transaction_to_be_updated.transaction_status)
                 transaction_to_be_updated.batch_id = batch_id
                 transaction_to_be_updated.transaction_status = "Completed"
                 transaction_to_be_updated.save()
@@ -215,6 +216,7 @@ def ishare_bundle(request):
                 return JsonResponse({'status': "Transaction completed Successfully", "icon": "success"})
             else:
                 transaction_to_be_updated = models.IShareBundleTransaction.objects.get(reference=reference)
+                print(transaction_to_be_updated.transaction_status)
                 transaction_to_be_updated.transaction_status = "Failed"
                 transaction_to_be_updated.message = "Status Code was not 200"
                 transaction_to_be_updated.save()

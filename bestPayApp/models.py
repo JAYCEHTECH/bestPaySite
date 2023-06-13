@@ -30,6 +30,7 @@ class Payment(models.Model):
     transaction_status = models.CharField(max_length=256, null=True, blank=True)
     transaction_date = models.CharField(max_length=250, null=True, blank=True)
     message = models.CharField(max_length=500, null=True, blank=True)
+    payment_visited = models.BooleanField(blank=False, null=False)
 
     def __str__(self):
         return f"{self.user.username} - {self.reference}"

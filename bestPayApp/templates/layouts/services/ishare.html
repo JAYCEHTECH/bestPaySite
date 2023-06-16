@@ -97,25 +97,28 @@
                 location.reload();
               },
               callback: function(response){
-                Swal.fire({text: "Processing your order."})
-                Swal.showLoading()
-                let token = $("input[name=csrfmiddlewaretoken]").val();
-                reference = response.reference
-                $.ajax({
-                  url: '/ishare/',
-                  method: "POST",
-                  data: {
-                    phone: phonenumber,
-                    amount: amount,
-                    reference: reference,
-                    csrfmiddlewaretoken: token,
-                  },
-                  success: function(response){
-                    Swal.fire({text: response.status, icon:response.icon, confirmButtonText:"Okay"}).then((value) => {
-                      location.reload()
-                    })
-                  }
+                Swal.fire({text: 'Click on continue to process your order', confirmButtonText: "Continue"}).then((result) => {
+                  Swal.fire({text: "Processing your order."})
+                  Swal.showLoading()
+                  let token = $("input[name=csrfmiddlewaretoken]").val();
+                  reference = response.reference
+                  $.ajax({
+                    url: '/ishare/',
+                    method: "POST",
+                    data: {
+                      phone: phonenumber,
+                      amount: amount,
+                      reference: reference,
+                      csrfmiddlewaretoken: token,
+                    },
+                    success: function(response){
+                      Swal.fire({text: response.status, icon:response.icon, confirmButtonText:"Okay"}).then((value) => {
+                        location.reload()
+                      })
+                    }
+                  })
                 })
+                
                 //let x = document.createElement("INPUT")
                 //x.setAttribute("type", "hidden")
                 //x.setAttribute("name", "reference_field")

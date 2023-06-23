@@ -85,50 +85,73 @@
               return;
             }
 
-            let handler = PaystackPop.setup({
-              key: 'pk_live_99e10d6f2512390f0960dbf9ac3a8163af13e275', // Replace with your public key
-              email: email,
-              amount: amount * 100,
-              currency: "GHS",
-              ref: ref, // generates a pseudo-unique reference. Please replace with a reference you generated. Or remove the line entirely so our API will generate one for you
-              // label: "Optional string that replaces customer email"
-              onClose: function(){
-                Swal.fire({text: "Transaction Closed"});
-                location.reload();
-              },
-              callback: function(response){
-                Swal.fire({text: 'Click on continue to process your order', confirmButtonText: "Continue"}).then((result) => {
-                  Swal.fire({text: "Processing your order."})
-                  Swal.showLoading()
-                  let token = $("input[name=csrfmiddlewaretoken]").val();
-                  reference = response.reference
-                  $.ajax({
-                    url: '/ishare/',
-                    method: "POST",
-                    data: {
-                      phone: phonenumber,
-                      amount: amount,
-                      reference: reference,
-                      csrfmiddlewaretoken: token,
-                    },
-                    success: function(response){
-                      Swal.fire({text: response.status, icon:response.icon, confirmButtonText:"Okay"}).then((value) => {
-                        location.reload()
-                      })
-                    }
-                  })
-                })
-                
-                //let x = document.createElement("INPUT")
-                //x.setAttribute("type", "hidden")
-                //x.setAttribute("name", "reference_field")
-                //x.setAttribute("value", reference)
-                //paymentForm.appendChild(x)
-                //paymentForm.submit();
-              }
-            });
+            let token = $("input[name=csrfmiddlewaretoken]").val();
 
-          handler.openIframe();
+            $.ajax({
+              url: '/save_details/',
+              method: "POST",
+              data: {
+                phone: phonenumber,
+                amount: amount,
+                ref: ref,
+                csrfmiddlewaretoken: token,
+              },
+              success: function(response){
+                Swal.showLoading()
+                Swal.fire({text: "Click Pay to initiate payment.", confirmButtonText: }).then((result) => {
+
+                  let handler = PaystackPop.setup({
+                    key: 'pk_live_99e10d6f2512390f0960dbf9ac3a8163af13e275', // Replace with your public key
+                    email: email,
+                    amount: amount * 100,
+                    currency: "GHS",
+                    ref: ref, // generates a pseudo-unique reference. Please replace with a reference you generated. Or remove the line entirely so our API will generate one for you
+                    // label: "Optional string that replaces customer email"
+                    onClose: function(){
+                      Swal.fire({text: "Transaction Closed"});
+                      location.reload();
+                    },
+                    callback: function(response){
+                      Swal.fire({text: 'Click on continue to process your order', confirmButtonText: "Continue"}).then((result) => {
+                        Swal.fire({text: "Processing your order."})
+                        Swal.showLoading()
+                        let token = $("input[name=csrfmiddlewaretoken]").val();
+                        reference = response.reference
+                        $.ajax({
+                          url: '/ishare/',
+                          method: "POST",
+                          data: {
+                            phone: phonenumber,
+                            amount: amount,
+                            reference: reference,
+                            csrfmiddlewaretoken: token,
+                          },
+                          success: function(response){
+                            Swal.fire({text: response.status, icon:response.icon, confirmButtonText:"Okay"}).then((value) => {
+                              location.reload()
+                            })
+                          }
+                        })
+                      })
+                      
+                      //let x = document.createElement("INPUT")
+                      //x.setAttribute("type", "hidden")
+                      //x.setAttribute("name", "reference_field")
+                      //x.setAttribute("value", reference)
+                      //paymentForm.appendChild(x)
+                      //paymentForm.submit();
+                    }
+                  });
+
+                  handler.openIframe();
+
+                })    
+
+              }
+            })
+
+
+          
         }
     </script>
 {% endblock %}

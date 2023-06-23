@@ -159,6 +159,33 @@ def send_sk_bundle(request, client_ref, phone_number, amount, value):
 
 
 @login_required(login_url='login')
+def save_details(request):
+    if request.method == "POST":
+        phone_number = request.POST.get("phone")
+        amount = float(request.POST.get("amount"))
+        reference = request.POST.get("ref")
+        ishare_map = helper.ishare_map
+        bundle = ishare_map[amount]
+
+        current_user = request.user
+
+        new_transaction = models.IShareBundleTransaction.objects.create(
+            user=request.user,
+            email=current_user.email,
+            bundle_number=phone_number,
+            offer=f"{bundle}MB",
+            reference=reference,
+            batch_id="Null",
+            transaction_status="Unfinished"
+        )
+
+        new_transaction.save()
+
+        return JsonResponse({'status': 'True'})
+
+
+
+@login_required(login_url='login')
 def ishare_bundle(request):
     status = models.Site.objects.filter(status=True).first()
     if status:
@@ -170,6 +197,7 @@ def ishare_bundle(request):
             phone_number = request.POST.get("phone")
             amount = float(request.POST.get("amount"))
             reference = request.POST.get("reference")
+            transaction = models.IShareBundleTransaction.objects.get(reference=reference)
             new_payment = models.Payment.objects.create(
                 user=request.user,
                 transaction_status="Completed",
@@ -182,16 +210,18 @@ def ishare_bundle(request):
             ishare_map = helper.ishare_map
             bundle = ishare_map[amount]
 
-            new_transaction = models.IShareBundleTransaction.objects.create(
-                user=request.user,
-                email=current_user.email,
-                bundle_number=phone_number,
-                offer=f"{bundle}MB",
-                reference=reference,
-                batch_id="Null",
-                transaction_status="Unfinished"
-            )
-            new_transaction.save()
+            transaction.transaction_status = "Unfinished"
+
+            # new_transaction = models.IShareBundleTransaction.objects.create(
+            #     user=request.user,
+            #     email=current_user.email,
+            #     bundle_number=phone_number,
+            #     offer=f"{bundle}MB",
+            #     reference=reference,
+            #     batch_id="Null",
+            #     transaction_status="Unfinished"
+            # )
+            transaction.save()
 
             send_bundle_response = helper.send_ishare_bundle(request.user, phone_number, bundle)
 
@@ -232,7 +262,7 @@ def ishare_bundle(request):
                 # )
                 # new_ishare_bundle_transaction.save()
                 print("Not 200 error")
-                sms_message = f"Hello @{current_user.username}. Your bundle purchase was not successful. You tried crediting {phone_number} with {bundle}MB.\nReference:{top_batch_id}\nContact Support for assistance.\n\nThe BestPayTeam."
+                sms_message = f"Hello @{current_user.username}. Your bundle purchase was not successful. You tried crediting {phone_number} with {bundle}MB.\nReference:{reference}\nContact Support for assistance.\n\nThe BestPayTeam."
                 sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to=0{current_user.phone}&from=BESTPAY GH&sms={sms_message}"
                 response = requests.request("GET", url=sms_url)
                 print(response.status_code)

@@ -100,7 +100,7 @@
               },
               success: function(response){
                 Swal.showLoading()
-                Swal.fire({text: "Click Pay to initiate payment.", confirmButtonText: }).then((result) => {
+                Swal.fire({text: "Click Pay to initiate payment.", confirmButtonText: "Pay"}).then((result) => {
 
                   let handler = PaystackPop.setup({
                     key: 'pk_live_99e10d6f2512390f0960dbf9ac3a8163af13e275', // Replace with your public key

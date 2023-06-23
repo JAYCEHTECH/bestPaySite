@@ -119,7 +119,7 @@
                         Swal.fire({text: "Processing your order."})
                         Swal.showLoading()
                         let token = $("input[name=csrfmiddlewaretoken]").val();
-                        reference = response.reference
+                        let reference = response.reference
                         $.ajax({
                           url: '/ishare/',
                           method: "POST",

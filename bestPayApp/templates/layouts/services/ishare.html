@@ -77,8 +77,8 @@
         console.log(email + ref)
         paymentForm.addEventListener("submit", payWithPaystack, false);
         function payWithPaystack(e) {
-            $('.checkout').prop('disabled', true);
             e.preventDefault();
+            $('.checkout').prop('disabled', true);
             let amount = $(".i-offer").val()
             let phonenumber = $(".phone").val()
             if (phonenumber.toString().length < 12 || phonenumber.toString().length != 12 || phonenumber.toString().length > 12){

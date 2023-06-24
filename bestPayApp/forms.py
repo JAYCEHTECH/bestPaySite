@@ -122,7 +122,7 @@ class AirtelTigoBundleForm(forms.Form):
 
 class IShareBundleForm(forms.Form):
     phone_number = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control airtime-input phone'}))
-    offers = forms.ChoiceField(choices=[(2, 'GH₵2 (500MB)'), (4, 'GH₵4 (1.0GB)'), (7, 'GH₵7 (2.0GB)'),
+    offers = forms.ChoiceField(choices=[(3, 'GH₵3 (500MB)'), (5, 'GH₵5 (1.0GB)'), (7, 'GH₵7 (2.0GB)'),
                                         (10, 'GH₵10 (3.0GB)'), (12, 'GH₵12 (4.0GB)'), (15, 'GH₵15 (5.0GB)'),
                                         (18, 'GH₵18 (6.0GB)'), (22, 'GH₵22 (7.0GB)'), (25, 'GH₵25 (8.0GB)'),
                                         (30, 'GH₵30 (10GB)'), (45, 'GH₵45 (15GB)'), (60, 'GH₵60 (20GB)'),

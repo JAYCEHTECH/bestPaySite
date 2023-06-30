@@ -184,6 +184,18 @@ def save_details(request):
         return JsonResponse({'status': 'True'})
 
 
+@login_required(login_url='login')
+def delete_unfinished(request):
+    if request.method == "POST":
+        reference = request.POST.get("reference")
+        print(reference)
+        delete_transaction = models.IShareBundleTransaction.objects.filter(reference=reference)
+        if delete_transaction.exists():
+            delete_transaction.delete()
+            return redirect('ishare_bundle')
+        else:
+            return redirect('ishare_bundle')
+
 
 @login_required(login_url='login')
 def ishare_bundle(request):

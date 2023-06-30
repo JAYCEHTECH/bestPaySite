@@ -90,6 +90,7 @@ urlpatterns = [
 
     path('verify_transaction/<str:reference>/', views.verify_transaction, name="verify_transaction"),
 
-    path('save_details/', other_at_bundles.save_details, name='save_details')
+    path('save_details/', other_at_bundles.save_details, name='save_details'),
+    path('delete_unfinished/', other_at_bundles.delete_unfinished, name='delete_unfinished')
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

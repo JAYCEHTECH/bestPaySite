@@ -100,9 +100,10 @@
               },
               success: function(response){
                 Swal.showLoading()
-                Swal.fire({text: "Click Pay to initiate payment.", confirmButtonText: "Pay"}).then((result) => {
-
-                  let handler = PaystackPop.setup({
+                Swal.fire({text: "Click Pay to initiate payment.", confirmButtonText: "Pay", cancelButtonText: 'Cancel', showCancelButton: true,allowOutsideClick: false,
+allowEscapeKey: false,}).then((result) => {
+                  if (result.isConfirmed){
+                      let handler = PaystackPop.setup({
                     key: 'pk_live_99e10d6f2512390f0960dbf9ac3a8163af13e275', // Replace with your public key
                     email: email,
                     amount: amount * 100,
@@ -111,6 +112,19 @@
                     // label: "Optional string that replaces customer email"
                     onClose: function(){
                       Swal.fire({text: "Transaction Closed"});
+                      $.ajax({
+                          url: '/delete_unfinished/',
+                          method: "POST",
+                          data: {
+                            phone: phonenumber,
+                            amount: amount,
+                            reference: ref,
+                            csrfmiddlewaretoken: token,
+                          },
+                          success: function(response){
+                              location.reload()
+                          }
+                        })
                       location.reload();
                       $('.checkout').prop('disabled', false);
                     },
@@ -136,7 +150,7 @@
                           }
                         })
                       })
-                      
+
                       //let x = document.createElement("INPUT")
                       //x.setAttribute("type", "hidden")
                       //x.setAttribute("name", "reference_field")
@@ -148,6 +162,24 @@
                   });
 
                   handler.openIframe();
+                  }
+                  else if (
+                    result.dismiss === Swal.DismissReason.cancel
+                  ){
+                      $.ajax({
+                          url: '/delete_unfinished/',
+                          method: "POST",
+                          data: {
+                            phone: phonenumber,
+                            amount: amount,
+                            reference: ref,
+                            csrfmiddlewaretoken: token,
+                          },
+                          success: function(response){
+                              location.reload()
+                          }
+                        })
+                  }
 
                 })    
 

@@ -279,7 +279,6 @@ def ishare_bundle(request):
                 response = requests.request("GET", url=sms_url)
                 print(response.status_code)
                 print(response.text)
-                #return redirect("failed")
                 return JsonResponse({'status': "Transaction Failed", "icon": "error"})
         context = {'form': form, "ref": reference, "email": user_email}
         return render(request, 'layouts/services/ishare.html', context=context)

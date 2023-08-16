@@ -285,6 +285,7 @@ def ishare_bundle(request):
     else:
         return render(request, "layouts/maintenance.html")
 
+
 def send_ishare_bundle(request, client_ref, phone_number, bundle):
     sleep(5)
     global ref_needed

@@ -35,20 +35,20 @@
                 {% csrf_token %}
                     <div class="form-row">
                       <div class="form-group col-md-6">
-                          <label style="color: #fff"> Phone Number </label>
+                          <label> Phone Number </label>
                           {{ form.phone_number }}
-                          <small style="color: #fff">Number must start with 233 and exclude 0 after 233. E.g. 2332XXXXXXXX"</small>
+                          <small>Number must start with 233 and exclude 0 after 233. E.g. 2332XXXXXXXX"</small>
                       </div>
                       <div class="form-group col-md-6">
-                          <label style="color: #fff"> Choose Offer </label>
+                          <label> Choose Offer </label>
                           {{ form.offers }}
                       </div>
 
                       <div class="col-md-12">
                           <p>Pay with</p>
-                          <img src="{% static 'img/services/momo-fig.png' %}" alt=""> <span style="color: #F6F6F6">||</span>
-                          <img src="{% static 'img/services/atm-fig.png' %}" alt=""> <span style="color: #F6F6F6">||</span>
-                          <img src="{% static 'img/services/voca-fig.png' %}" alt=""> <span style="color: #F6F6F6">||</span>
+                          <img src="{% static 'img/services/momo-fig.png' %}" alt=""> <span style="color: #383838">||</span>
+                          <img src="{% static 'img/services/atm-fig.png' %}" alt=""> <span style="color: #383838">||</span>
+                          <img src="{% static 'img/services/voca-fig.png' %}" alt=""> <span style="color: #383838">||</span>
                           <img src="{% static 'img/services/vima-fig.png' %}" alt="">
                       </div>
                     <button type="submit" class="btn btn-lg btn-primary my-3">Checkout</button>

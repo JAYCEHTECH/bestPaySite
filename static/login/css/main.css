@@ -53,7 +53,7 @@
 body, html {
 	height: 100%;
 	font-family: Poppins-Regular, sans-serif;
-    background-color: #383838;
+    background-color: #F6F5FC;
 }
 
 .ajs-message.ajs-custom {
@@ -95,7 +95,7 @@ p {
 	font-family: Poppins-Regular, sans-serif;
 	font-size: 14px;
 	line-height: 1.7;
-	color: #F6F6F6;
+	color: #383838;
 	margin: 0;
 }
 
@@ -204,7 +204,7 @@ iframe {
 .limiter {
   width: 100%;
   margin: 0 auto;
-  background-color: #383838;
+  background-color: #F6F5FC;
 }
 
 .container-login100 {
@@ -269,7 +269,7 @@ iframe {
   width: 560px;
   min-height: 100vh;
   display: block;
-  background-color: #383838;
+  background-color: #F6F5FC;
   padding: 173px 55px 55px 55px;
 }
 
@@ -330,7 +330,7 @@ iframe {
   background: transparent;
   font-family: Montserrat-Regular;
   font-size: 18px;
-  color: #F6F6F6;
+  color: #383838;
   line-height: 1.2;
   padding: 0 26px;
 }
@@ -448,7 +448,7 @@ input.input100 {
   height: 18px;
   border-radius: 2px;
   background: #fff;
-  border: 1px solid #6675df;
+  border: 1px solid #0085FF;
   left: 0;
   top: 50%;
   -webkit-transform: translateY(-50%);
@@ -459,7 +459,7 @@ input.input100 {
 }
 
 .input-checkbox100:checked + .label-checkbox100::before {
-  color: #6675df;
+  color: #0085FF;
 }
 
 
@@ -488,7 +488,7 @@ input.input100 {
   width: 100%;
   height: 50px;
   border-radius: 10px;
-  background: #6675df;
+  background: #0085FF;
 
   font-family: Montserrat-Bold;
   font-size: 12px;
@@ -625,6 +625,6 @@ input.input100 {
 }
 
 .login100-form-social-item:hover {
-  background: #333333;
+  background: #F6F5FC;
   color: #fff;
 }

@@ -41,9 +41,9 @@
                     {% csrf_token %}
                     <div class="form-row">
                       <div class="form-group col-md-6">
-                          <label style="color: #fff"> Phone Number </label>
+                          <label> Phone Number </label>
                           {{ form.phone_number }}
-                          <small style="color: #fff">Number must start with 233 and exclude 0 after 233. E.g. 2332XXXXXXXX"</small>
+                          <small>Number must start with 233 and exclude 0 after 233. E.g. 2332XXXXXXXX"</small>
                           <br>
                           <button class="verify my-2 mr-3 btn btn-sm btn-outline-success">Verify Number</button>
                           <div class="spinner text-success" role="status">
@@ -51,11 +51,11 @@
                           </div>
                       </div>
                       <div class="form-group col-md-6">
-                          <label style="color: #fff"> Amount </label>
+                          <label> Amount </label>
                           {{ form.amount }}
                       </div>
                       <div class="form-group col-md-6">
-                          <label style="color: #fff">Select Provider</label>
+                          <label>Select Provider</label>
                           {{ form.provider }}
                       </div>
 

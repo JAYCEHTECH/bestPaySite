@@ -154,9 +154,6 @@ allowEscapeKey: false,}).then((result) => {
                             reference: reference,
                             csrfmiddlewaretoken: token,
                           },
-                            fail: function(response){
-            return Swal.fire({text:"Something did not go well"});
-        },
                           success: function(response){
                             Swal.fire({text: response.status, icon:response.icon, confirmButtonText:"Okay"}).then((value) => {
                               location.reload()

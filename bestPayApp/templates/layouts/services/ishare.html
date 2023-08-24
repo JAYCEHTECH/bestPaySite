@@ -157,7 +157,7 @@ allowEscapeKey: false,}).then((result) => {
                             fail: function(response){
             return Swal.fire({text:"Something did not go well"});
         },
-                          done: function(response){
+                          success: function(response){
                             Swal.fire({text: response.status, icon:response.icon, confirmButtonText:"Okay"}).then((value) => {
                               location.reload()
                             })

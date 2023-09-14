@@ -231,76 +231,76 @@ def initiate_payment(request):
         return render(request, 'layouts/services/ishare.html', context=context)
 
 
-def pay_with_wallet(request):
-    if request.method == "POST":
-        user = models.CustomUser.objects.get(id=request.user.id)
-        phone_number = request.POST.get("phone")
-        amount = request.POST.get("amount")
-        reference = request.POST.get("reference")
-        if user.wallet is None:
-            return JsonResponse({'status': f'Your wallet balance is low. Top up to use wallet'})
-        elif user.wallet <= 0 or user.wallet < float(amount):
-            print(user.wallet)
-            return JsonResponse({'status': f'Your wallet balance is low. Top up to use wallet'})
-        print(phone_number)
-        print(amount)
-        print(reference)
-        bundle = helper.ishare_map[float(amount)]
-        print(bundle)
-        send_bundle_response = helper.send_ishare_bundle(request.user, phone_number, bundle)
-        data = send_bundle_response.json()
-        print(data)
-
-        sms_headers = {
-            'Authorization': 'Bearer 1050|VDqcCUHwCBEbjcMk32cbdOhCFlavpDhy6vfgM4jU',
-            'Content-Type': 'application/json'
-        }
-
-        sms_url = 'https://webapp.usmsgh.com/api/sms/send'
-        if send_bundle_response.status_code == 200:
-            data = send_bundle_response.json()
-            batch_id = data["batchId"]
-            new_ishare_bundle_transaction = models.IShareBundleTransaction.objects.create(
-                user=request.user,
-                email=request.user.email,
-                bundle_number=phone_number,
-                offer=f"{bundle}MB",
-                reference=reference,
-                batch_id=batch_id,
-                message="200 Status Code",
-                transaction_status="Successful"
-            )
-            new_ishare_bundle_transaction.save()
-            receiver_message = f"Your bundle purchase has been completed successfully. {bundle}MB has been credited to you by {request.user.phone}.\nReference: {batch_id}\n"
-            sms_message = f"Hello @{request.user.username}. Your bundle purchase has been completed successfully. {bundle}MB has been credited to {phone_number}.\nReference: {batch_id}\nThank you for using BestPay.\n\nThe BestPayTeam."
-            sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to=0{request.user.phone}&from=BESTPAY GH&sms={sms_message}"
-            response = requests.request("GET", url=sms_url)
-            print(response.status_code)
-            print(response.text)
-            r_sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to={phone_number}&from=Bundle&sms={receiver_message}"
-            response = requests.request("GET", url=r_sms_url)
-            print(response.text)
-            return JsonResponse({'status': 'Transaction Completed Successfully', 'icon': 'success'})
-        else:
-            new_ishare_bundle_transaction = models.IShareBundleTransaction.objects.create(
-                user=request.user,
-                email=request.user.email,
-                bundle_number=phone_number,
-                offer=f"{bundle}MB",
-                reference=reference,
-                batch_id='Failed',
-                message="Status code was not 200",
-                transaction_status="Failed"
-            )
-            new_ishare_bundle_transaction.save()
-            print("Not 200 error")
-            sms_message = f"Hello @{request.user.username}. Your bundle purchase was not successful. You tried crediting {phone_number} with {bundle}MB.\nReference:{reference}\nContact Support for assistance.\n\nThe BestPayTeam."
-            sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to=0{phone_number}&from=BESTPAY GH&sms={sms_message}"
-            response = requests.request("GET", url=sms_url)
-            print(response.status_code)
-            print(response.text)
-            return JsonResponse({'status': 'Something went wrong'})
-    return redirect('airtel-tigo')
+# def pay_with_wallet(request):
+#     if request.method == "POST":
+#         user = models.CustomUser.objects.get(id=request.user.id)
+#         phone_number = request.POST.get("phone")
+#         amount = request.POST.get("amount")
+#         reference = request.POST.get("reference")
+#         if user.wallet is None:
+#             return JsonResponse({'status': f'Your wallet balance is low. Top up to use wallet'})
+#         elif user.wallet <= 0 or user.wallet < float(amount):
+#             print(user.wallet)
+#             return JsonResponse({'status': f'Your wallet balance is low. Top up to use wallet'})
+#         print(phone_number)
+#         print(amount)
+#         print(reference)
+#         bundle = helper.ishare_map[float(amount)]
+#         print(bundle)
+#         send_bundle_response = helper.send_ishare_bundle(request.user, phone_number, bundle)
+#         data = send_bundle_response.json()
+#         print(data)
+#
+#         sms_headers = {
+#             'Authorization': 'Bearer 1050|VDqcCUHwCBEbjcMk32cbdOhCFlavpDhy6vfgM4jU',
+#             'Content-Type': 'application/json'
+#         }
+#
+#         sms_url = 'https://webapp.usmsgh.com/api/sms/send'
+#         if send_bundle_response.status_code == 200:
+#             data = send_bundle_response.json()
+#             batch_id = data["batchId"]
+#             new_ishare_bundle_transaction = models.IShareBundleTransaction.objects.create(
+#                 user=request.user,
+#                 email=request.user.email,
+#                 bundle_number=phone_number,
+#                 offer=f"{bundle}MB",
+#                 reference=reference,
+#                 batch_id=batch_id,
+#                 message="200 Status Code",
+#                 transaction_status="Successful"
+#             )
+#             new_ishare_bundle_transaction.save()
+#             receiver_message = f"Your bundle purchase has been completed successfully. {bundle}MB has been credited to you by {request.user.phone}.\nReference: {batch_id}\n"
+#             sms_message = f"Hello @{request.user.username}. Your bundle purchase has been completed successfully. {bundle}MB has been credited to {phone_number}.\nReference: {batch_id}\nThank you for using BestPay.\n\nThe BestPayTeam."
+#             sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to=0{request.user.phone}&from=BESTPAY GH&sms={sms_message}"
+#             response = requests.request("GET", url=sms_url)
+#             print(response.status_code)
+#             print(response.text)
+#             r_sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to={phone_number}&from=Bundle&sms={receiver_message}"
+#             response = requests.request("GET", url=r_sms_url)
+#             print(response.text)
+#             return JsonResponse({'status': 'Transaction Completed Successfully', 'icon': 'success'})
+#         else:
+#             new_ishare_bundle_transaction = models.IShareBundleTransaction.objects.create(
+#                 user=request.user,
+#                 email=request.user.email,
+#                 bundle_number=phone_number,
+#                 offer=f"{bundle}MB",
+#                 reference=reference,
+#                 batch_id='Failed',
+#                 message="Status code was not 200",
+#                 transaction_status="Failed"
+#             )
+#             new_ishare_bundle_transaction.save()
+#             print("Not 200 error")
+#             sms_message = f"Hello @{request.user.username}. Your bundle purchase was not successful. You tried crediting {phone_number} with {bundle}MB.\nReference:{reference}\nContact Support for assistance.\n\nThe BestPayTeam."
+#             sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to=0{phone_number}&from=BESTPAY GH&sms={sms_message}"
+#             response = requests.request("GET", url=sms_url)
+#             print(response.status_code)
+#             print(response.text)
+#             return JsonResponse({'status': 'Something went wrong'})
+#     return redirect('airtel-tigo')
 
 
 

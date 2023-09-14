@@ -4,11 +4,15 @@ from time import sleep
 from datetime import datetime
 
 import requests
+from asgiref.sync import sync_to_async
 from decouple import config
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
+from requests.adapters import HTTPAdapter
+from urllib3 import Retry
+
 from bestPayApp.forms import SikaKokooBundleForm, IShareBundleForm
 from bestPayApp import helper, models
 
@@ -110,7 +114,9 @@ def send_sk_bundle(request, client_ref, phone_number, amount, value):
 
                 reference = f"\"{client_ref}\""
 
-                payload = "{\r\n    \"Destination\": " + str(phone_number) + ",\r\n    \"Amount\": " + str(amount) + ",\r\n    \"CallbackUrl\": \"https://webhook.site/33d27e7d-6dd5-4899-b702-6c9022bea8c7\",\r\n    \"ClientReference\": " + str(reference) + ",\r\n    \"Extradata\" : {\r\n        \"bundle\" : " + value + "\r\n    }\r\n}\r\n"
+                payload = "{\r\n    \"Destination\": " + str(phone_number) + ",\r\n    \"Amount\": " + str(
+                    amount) + ",\r\n    \"CallbackUrl\": \"https://webhook.site/33d27e7d-6dd5-4899-b702-6c9022bea8c7\",\r\n    \"ClientReference\": " + str(
+                    reference) + ",\r\n    \"Extradata\" : {\r\n        \"bundle\" : " + value + "\r\n    }\r\n}\r\n"
                 headers = {
                     'Authorization': config("HUBTEL_API_KEY"),
                     'Content-Type': 'text/plain'
@@ -184,6 +190,120 @@ def save_details(request):
         return JsonResponse({'status': 'True'})
 
 
+def initiate_payment(request):
+    status = models.Site.objects.filter(status=True).first()
+    if status:
+        form = IShareBundleForm()
+        if request.method == "POST":
+            form = IShareBundleForm(request.POST)
+            if form.is_valid():
+                amount = form.cleaned_data["offers"]
+                phone_number = form.cleaned_data["phone_number"]
+
+                print(amount)
+                print(phone_number)
+
+                pk = "pk_live_99e10d6f2512390f0960dbf9ac3a8163af13e275"
+
+                payment = models.Payment.objects.create(amount=amount, user=request.user, payment_number=phone_number)
+                payment.save()
+
+                reference = payment.reference
+
+                if payment:
+                    context = {
+                        'payment': payment,
+                        'reference_f': reference,
+                        'field_values': request.POST,
+                        'paystack_pub_key': pk,
+                        'amount_value': payment.amount_value(),
+                        'phone_number': phone_number,
+                        'email': request.user.email,
+                        'channel': 'ishare'
+                    }
+                    return render(request, 'layouts/services/make_payment.html', context)
+                else:
+                    return redirect('ishare_bundle')
+            else:
+                print("nope")
+        user = models.CustomUser.objects.get(id=request.user.id)
+        context = {'form': form, 'wallet': 0 if user.wallet is None or user.wallet is 0.0 else user.wallet}
+        return render(request, 'layouts/services/ishare.html', context=context)
+
+
+def pay_with_wallet(request):
+    if request.method == "POST":
+        user = models.CustomUser.objects.get(id=request.user.id)
+        phone_number = request.POST.get("phone")
+        amount = request.POST.get("amount")
+        reference = request.POST.get("reference")
+        if user.wallet is None:
+            return JsonResponse({'status': f'Your wallet balance is low. Top up to use wallet'})
+        elif user.wallet <= 0 or user.wallet < float(amount):
+            print(user.wallet)
+            return JsonResponse({'status': f'Your wallet balance is low. Top up to use wallet'})
+        print(phone_number)
+        print(amount)
+        print(reference)
+        bundle = helper.ishare_map[float(amount)]
+        print(bundle)
+        send_bundle_response = helper.send_ishare_bundle(request.user, phone_number, bundle)
+        data = send_bundle_response.json()
+        print(data)
+
+        sms_headers = {
+            'Authorization': 'Bearer 1050|VDqcCUHwCBEbjcMk32cbdOhCFlavpDhy6vfgM4jU',
+            'Content-Type': 'application/json'
+        }
+
+        sms_url = 'https://webapp.usmsgh.com/api/sms/send'
+        if send_bundle_response.status_code == 200:
+            data = send_bundle_response.json()
+            batch_id = data["batchId"]
+            new_ishare_bundle_transaction = models.IShareBundleTransaction.objects.create(
+                user=request.user,
+                email=request.user.email,
+                bundle_number=phone_number,
+                offer=f"{bundle}MB",
+                reference=reference,
+                batch_id=batch_id,
+                message="200 Status Code",
+                transaction_status="Successful"
+            )
+            new_ishare_bundle_transaction.save()
+            receiver_message = f"Your bundle purchase has been completed successfully. {bundle}MB has been credited to you by {request.user.phone}.\nReference: {batch_id}\n"
+            sms_message = f"Hello @{request.user.username}. Your bundle purchase has been completed successfully. {bundle}MB has been credited to {phone_number}.\nReference: {batch_id}\nThank you for using BestPay.\n\nThe BestPayTeam."
+            sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to=0{request.user.phone}&from=BESTPAY GH&sms={sms_message}"
+            response = requests.request("GET", url=sms_url)
+            print(response.status_code)
+            print(response.text)
+            r_sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to={phone_number}&from=Bundle&sms={receiver_message}"
+            response = requests.request("GET", url=r_sms_url)
+            print(response.text)
+            return JsonResponse({'status': 'Transaction Completed Successfully', 'icon': 'success'})
+        else:
+            new_ishare_bundle_transaction = models.IShareBundleTransaction.objects.create(
+                user=request.user,
+                email=request.user.email,
+                bundle_number=phone_number,
+                offer=f"{bundle}MB",
+                reference=reference,
+                batch_id='Failed',
+                message="Status code was not 200",
+                transaction_status="Failed"
+            )
+            new_ishare_bundle_transaction.save()
+            print("Not 200 error")
+            sms_message = f"Hello @{request.user.username}. Your bundle purchase was not successful. You tried crediting {phone_number} with {bundle}MB.\nReference:{reference}\nContact Support for assistance.\n\nThe BestPayTeam."
+            sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to=0{phone_number}&from=BESTPAY GH&sms={sms_message}"
+            response = requests.request("GET", url=sms_url)
+            print(response.status_code)
+            print(response.text)
+            return JsonResponse({'status': 'Something went wrong'})
+    return redirect('airtel-tigo')
+
+
+
 @login_required(login_url='login')
 def delete_unfinished(request):
     if request.method == "POST":
@@ -254,7 +374,7 @@ def ishare_bundle(request):
                 r_sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to={phone_number}&from=Bundle&sms={receiver_message}"
                 response = requests.request("GET", url=r_sms_url)
                 print(response.text)
-                #return redirect("thank_you")
+                # return redirect("thank_you")
                 return JsonResponse({'status': "Transaction completed Successfully", "icon": "success"})
             else:
                 transaction_to_be_updated = models.IShareBundleTransaction.objects.get(reference=reference)

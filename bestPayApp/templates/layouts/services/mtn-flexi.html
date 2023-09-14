@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} MTN Bundles - BestPay {% endblock %}
+{% block content %}
+
+  <!-- Back to top button -->
+  <div class="back-to-top"></div>
+
+  <header>
+    {% include 'inc/navbar.html' %}
+
+    <div class="container mt-5">
+      <div class="page-banner">
+        <div class="row justify-content-center align-items-center h-100">
+          <div class="col-md-6">
+            <nav aria-label="Breadcrumb">
+              <ul class="breadcrumb justify-content-center py-0 bg-transparent">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                <li class="breadcrumb-item active"><a href="{% url 'services' %}">Services</a></li>
+                <li class="breadcrumb-item active"><a href="{% url 'bundle' %}">Bundles</a></li>
+                <li class="breadcrumb-item active">MTN Flexi</li>
+              </ul>
+            </nav>
+            <h1 style="color: #8e8aad" class="text-center">Buy MTN Flexi Bundles at cheaper Rates</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="page-section">
+        <div class="container">
+            {% for error in form.non_field_errors %}
+                <small style="display: block; color: red">{{ error }}</small>
+            {% endfor %}
+            <form method="post" id="mtnPaymentForm">
+                {% csrf_token %}
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label> Phone Number </label>
+                            {{ form.phone_number }}
+                            <small>Number must be 10 digits. E.g. 02XXXXXXXX"</small>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label> Choose Offer </label>
+                            {{ form.offers }}
+                        </div>
+
+                        <div class="col-md-12">
+                          <p>Wallet Balance: GHS{{ wallet }}. <a class="font-italic" href="#">Click here to top up wallet</a></p>
+                        </div>
+                        <input type="hidden" class="email" value="{{ email }}">
+                        <input type="hidden" class="ref" value="{{ ref }}">
+                        <button type="submit" onclick="payWithPaystack()" class="btn btn-outline-success my-3 mx-2">Go to Checkout</button>
+                        <button type="button" class="btn btn-outline-primary my-3 pay-with-wallet">Pay with Wallet</button>
+
+                    </div>
+            </form>
+        </div>
+    </div>   <!-- .page-section -->
+  </main>
+
+{% include 'inc/footer.html' %}
+
+
+
+{% endblock %}
+{% block script %}
+
+
+{% endblock script %}

@@ -1,5 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+
+from bestPayApp import models
 from bestPayApp.models import CustomUser
 
 
@@ -14,17 +16,19 @@ class CustomUserForm(UserCreationForm):
 
     class Meta:
         model = CustomUser
-        fields = ['first_name', 'last_name','username', 'email', 'phone', 'password1', 'password2']
+        fields = ['first_name', 'last_name', 'username', 'email', 'phone', 'password1', 'password2']
 
 
 class SendMessageForm(forms.Form):
     name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Name'}))
     email = forms.EmailField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Email'}))
-    message = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 6, 'placeholder': 'Message'}))
+    message = forms.CharField(
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 6, 'placeholder': 'Message'}))
 
 
 class AirtimeForm(forms.Form):
-    phone_number = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control airtime-input phone_input'}))
+    phone_number = forms.IntegerField(
+        widget=forms.NumberInput(attrs={'class': 'form-control airtime-input phone_input'}))
     amount = forms.FloatField(max_value=500, min_value=1, step_size=0.5,
                               widget=forms.NumberInput(attrs={'class': 'form-control airtime-input'}))
     provider = forms.ChoiceField(choices=[(1, 'MTN'), (2, 'AirtelTigo'), (3, 'Vodafone'), (4, 'Glo')],
@@ -79,12 +83,23 @@ class MTNBundleForm(forms.Form):
                     'Check your number and try again. You may want to exclude the "0" after 233')
 
 
+class MTNFlexiBundleForm(forms.Form):
+    phone_number = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control airtime-input mtn-phone'}))
+    offers = forms.ModelChoiceField(queryset=models.MTNBundlePrice.objects.all(), empty_label=None, to_field_name='price',
+                                    widget=forms.Select(attrs={'class': 'form-control airtime-input mtn-offer'}))
+
+    class Meta:
+        model = CustomUser
+        fields = ['first_name', 'last_name', 'username', 'email', 'phone', 'password1', 'password2']
+
+
 class OtherMTNBundleForm(forms.Form):
     phone_number = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control airtime-input'}))
-    offers = forms.ChoiceField(choices=[('1.09', 'Kokrokoo 400MB, 20Min'), ('1', 'Video 183.49MB'), ('5', 'Video 917.43MB'),
-                                        ('10', 'Video 1.79GB'), ('1s', 'Social Media 96.15MB'), ('5s', 'Social Media 480.77MB'),
-                                        ('10s', 'Social Media 961.54MB')],
-                               widget=forms.Select(attrs={'class': 'form-control airtime-input'}))
+    offers = forms.ChoiceField(
+        choices=[('1.09', 'Kokrokoo 400MB, 20Min'), ('1', 'Video 183.49MB'), ('5', 'Video 917.43MB'),
+                 ('10', 'Video 1.79GB'), ('1s', 'Social Media 96.15MB'), ('5s', 'Social Media 480.77MB'),
+                 ('10s', 'Social Media 961.54MB')],
+        widget=forms.Select(attrs={'class': 'form-control airtime-input'}))
 
     def clean(self):
         cleaned_data = super(OtherMTNBundleForm, self).clean()
@@ -130,25 +145,16 @@ class IShareBundleForm(forms.Form):
                                         (145, 'GH₵145 (50GB)'), (285, 'GH₵285 (100GB)'), (560, 'GH₵560 (200GB)')],
                                widget=forms.Select(attrs={'class': 'form-control airtime-input i-offer'}))
 
-    def clean(self):
-        cleaned_data = super(IShareBundleForm, self).clean()
-        phone_number = cleaned_data.get('phone_number')
-        if not phone_number:
-            raise forms.ValidationError('Fill all the spaces provided!')
-        if phone_number:
-            if str(phone_number)[:3] != "233":
-                raise forms.ValidationError('Number must start with country code: Eg. 233XXXXXXXXX')
-            if len(str(phone_number)) != 12:
-                raise forms.ValidationError(
-                    'Check your number and try again. You may want to exclude the "0" after 233')
-
 
 class SikaKokooBundleForm(forms.Form):
     phone_number = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control airtime-input'}))
     offers = forms.ChoiceField(choices=[(3, 'GH₵3 (Sika Kokoo 500MB - 1day)'), (5, 'GH₵5 (Sika Kokoo 900MB - 3days)'),
-                                        (6, 'GH₵6 (Sika Kokoo 1.2GB - 2days)'), (10, 'GH₵10 (Sika Kokoo 1.4GB - 5days)'),
-                                        (11, 'GH₵11 (Sika Kokoo 2GB - 2days)'), (15, 'GH₵15 (Sika Kokoo 2.6GB - 4days)'),
-                                        (20, 'GH₵20 (Sika Kokoo 3GB - 5days)'),(50, 'GH₵50 (Sika Kokoo 6.8GB - 15days)')],
+                                        (6, 'GH₵6 (Sika Kokoo 1.2GB - 2days)'),
+                                        (10, 'GH₵10 (Sika Kokoo 1.4GB - 5days)'),
+                                        (11, 'GH₵11 (Sika Kokoo 2GB - 2days)'),
+                                        (15, 'GH₵15 (Sika Kokoo 2.6GB - 4days)'),
+                                        (20, 'GH₵20 (Sika Kokoo 3GB - 5days)'),
+                                        (50, 'GH₵50 (Sika Kokoo 6.8GB - 15days)')],
                                widget=forms.Select(attrs={'class': 'form-control airtime-input'}))
 
     def clean(self):
@@ -185,7 +191,8 @@ class TvForm(forms.Form):
 
 
 class TVCheckForm(forms.Form):
-    account_number = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control airtime-input account-input'}))
+    account_number = forms.IntegerField(
+        widget=forms.NumberInput(attrs={'class': 'form-control airtime-input account-input'}))
     provider = forms.ChoiceField(choices=[("DSTV", "DSTV"), ("GOTV", "GoTv"), ("STARTIMES", "StarTimesTv")],
                                  widget=forms.Select(attrs={'class': 'form-control airtime-input provider-input'}))
 
@@ -194,3 +201,10 @@ class TVCheckForm(forms.Form):
         account_number = cleaned_data.get('account_number')
         if not account_number:
             raise forms.ValidationError('Fill all the spaces provided!')
+
+
+class CreditUserForm(forms.Form):
+    user = forms.ModelChoiceField(queryset=models.CustomUser.objects.all().order_by('username'), to_field_name='username', empty_label=None,
+                                  widget=forms.Select(attrs={'class': 'form-control airtime-input'}))
+    amount = forms.FloatField(widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'GHS 100'}))
+

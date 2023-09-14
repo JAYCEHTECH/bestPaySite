@@ -7,15 +7,25 @@ from .models import CustomUser
 
 
 class CustomUserAdmin(UserAdmin):
-    list_display = ['first_name', 'last_name', 'username', 'email', 'phone']
+    list_display = ['first_name', 'last_name', 'username', 'email', 'wallet', 'phone']
+
+    fieldsets = (
+        *UserAdmin.fieldsets,
+        (
+            'Other Personal info',
+            {
+                'fields': (
+                    'phone', 'wallet'
+                )
+            }
+        )
+    )
 
     add_fieldsets = (
         (None, {
-            'fields': ('username', 'password1', 'password2')
-        }),
-        ('Personal info', {
-            'fields': ('first_name', 'last_name', 'email', 'phone')
-        }))
+            'classes': ('wide',),
+            'fields': ('username', 'password1', 'password2', 'wallet')
+        }),)
 
 
 class PaymentAdmin(admin.ModelAdmin):
@@ -105,6 +115,7 @@ admin.site.register(models.Intruder, IntruderAdmin)
 admin.site.register(models.AppPayment)
 admin.site.register(models.AppIShareBundleTransaction)
 admin.site.register(models.Site)
+admin.site.register(models.MTNBundlePrice)
 
 admin.site.register(models.Product, ProductAdmin)
 admin.site.register(models.Cart, CartAdmin)

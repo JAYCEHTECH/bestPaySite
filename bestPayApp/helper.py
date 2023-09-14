@@ -1,9 +1,14 @@
 import json
 import secrets
 from datetime import datetime
+from time import sleep
 
 import requests
 from decouple import config
+from django.contrib import messages
+from django.shortcuts import redirect
+from requests.adapters import HTTPAdapter
+from urllib3 import Retry
 
 from bestPayApp import models
 
@@ -76,8 +81,19 @@ def send_ishare_bundle(current_user, phone_number, bundle):
         'Content-Type': 'application/json'
     }
 
-    response = requests.request("POST", url, headers=headers, data=payload)
-    print(response.json())
+    session = requests.Session()
+    retry = Retry(connect=15, backoff_factor=0.5)
+    adapter = HTTPAdapter(max_retries=retry)
+    session.mount('https://', adapter)
+
+    response = session.post(url, headers=headers, data=payload)
+
+    parsed = response.json()
+
+    print(parsed)
+
+    # response = requests.request("POST", url, headers=headers, data=payload)
+    # print(response.json())
     return response
 
     # if response.status_code == 200:
@@ -388,7 +404,7 @@ def get_balance(account_number, provider):
 
 def ishare_verification(batch_id):
 
-    url = f"https://lab.xardtek.com/npe/api/context/business/airteltigo-gh/ishare/tranx-status/{batch_id}"
+    url = f"https://backend.boldassure.net:445/live/api/context/business/airteltigo-gh/ishare/tranx-status/{batch_id}"
 
     payload = {}
     headers = {
@@ -400,6 +416,93 @@ def ishare_verification(batch_id):
     if response.status_code == 200:
         json_data = response.json()
 
-        print(json_data)
+        return json_data
+    else:
+        return False
 
 
+def ishare_after_verification(request, current_user, payment, bundle):
+    ishare_response = send_ishare_bundle(request.user, payment.payment_number, bundle)
+    if ishare_response.status_code == 200:
+        data = ishare_response.json()
+        batch_id = data["batchId"]
+        sleep(10)
+        verified = ishare_verification(batch_id)
+        if verified is not False:
+            code = verified["flexiIshareTranxStatus"]["flexiIshareTranxStatusResult"]["apiResponse"]["responseCode"]
+            if code == '200':
+                new_ishare_bundle_transaction = models.IShareBundleTransaction.objects.create(
+                    user=current_user,
+                    email=current_user.email,
+                    bundle_number=payment.payment_number,
+                    offer=f"{bundle}MB",
+                    reference=payment.reference,
+                    batch_id=batch_id,
+                    message="200 Status Code",
+                    transaction_status="Successful"
+                )
+                new_ishare_bundle_transaction.save()
+                receiver_message = f"Your bundle purchase has been completed successfully. {bundle}MB has been credited to you by {current_user.phone}.\nReference: {batch_id}\n"
+                sms_message = f"Hello @{request.user.username}. Your bundle purchase has been completed successfully. {bundle}MB has been credited to {payment.payment_number}.\nReference: {batch_id}\nThank you for using BestPay.\n\nThe BestPayTeam."
+                sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to=0{current_user.phone}&from=BESTPAY GH&sms={sms_message}"
+                try:
+                    response = requests.request("GET", url=sms_url)
+                    print(response.status_code)
+                    print(response.text)
+                    r_sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to={payment.payment_number}&from=Bundle&sms={receiver_message}"
+                    response = requests.request("GET", url=r_sms_url)
+                    print(response.text)
+                    return redirect("thank_you")
+                except:
+                    return redirect("thank_you")
+            else:
+                new_ishare_bundle_transaction = models.IShareBundleTransaction.objects.create(
+                    user=current_user,
+                    email=current_user.email,
+                    bundle_number=payment.payment_number,
+                    offer=f"{bundle}MB",
+                    reference=payment.reference,
+                    batch_id=batch_id,
+                    message="Status code was 200 but query showed the transaction was unsuccessful",
+                    transaction_status="Failed"
+                )
+                new_ishare_bundle_transaction.save()
+                messages.info(request, "Something went wrong with your transaction")
+                return redirect('failed')
+        else:
+            new_ishare_bundle_transaction = models.IShareBundleTransaction.objects.create(
+                user=current_user,
+                email=current_user.email,
+                bundle_number=payment.payment_number,
+                offer=f"{bundle}MB",
+                reference=payment.reference,
+                batch_id='Successful',
+                message="Status code was 200 but query did not return anything useful",
+                transaction_status="Success"
+            )
+            new_ishare_bundle_transaction.save()
+            messages.info(request, "Transaction Completed")
+            return redirect('thank_you')
+
+    else:
+        new_ishare_bundle_transaction = models.IShareBundleTransaction.objects.create(
+            user=current_user,
+            email=current_user.email,
+            bundle_number=payment.payment_number,
+            offer=f"{bundle}MB",
+            reference=payment.reference,
+            batch_id='Failed',
+            message="Status code was not 200",
+            transaction_status="Failed"
+        )
+        new_ishare_bundle_transaction.save()
+        print("Not 200 error")
+        try:
+            sms_message = f"Hello @{current_user.username}. Your bundle purchase was not successful. You tried crediting {payment.payment_number} with {bundle}MB.\nReference:{payment.reference}\nContact Support for assistance.\n\nThe BestPayTeam."
+            sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to=0{current_user.phone}&from=BESTPAY GH&sms={sms_message}"
+            response = requests.request("GET", url=sms_url)
+            print(response.status_code)
+            print(response.text)
+            return redirect('failed')
+        except:
+            return redirect('failed')

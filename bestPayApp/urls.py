@@ -57,7 +57,7 @@ urlpatterns = [
     path("services/bundles/airtel-tigo/sika-kokoo", other_at_bundles.sika_kokoo, name="at-sika-kokoo"),
     path("send_sk_bundle/<str:client_ref>/<str:phone_number>/<str:amount>/<str:value>",
          other_at_bundles.send_sk_bundle, name="send_sk_bundle"),
-    path("ishare/", other_at_bundles.ishare_bundle, name="ishare_bundle"),
+    path("ishare/initiate_payment", other_at_bundles.initiate_payment, name="ishare_bundle"),
     path("send_ishare_bundle/<str:client_ref>/<str:phone_number>/<str:bundle>", other_at_bundles.send_ishare_bundle, name="send_ishare_bundle"),
 
     path("services/tv", tvViews.tv_all, name="tv"),
@@ -88,9 +88,16 @@ urlpatterns = [
     path("place_order/<str:client_ref>/<str:first_name>/<str:last_name>/<str:email>/<str:phone>/<str:address>",
          checkoutViews.place_order, name="place-order"),
 
-    path('verify_transaction/<str:reference>/', views.verify_transaction, name="verify_transaction"),
+    path('verify_payment/<str:ref>/<str:channel>/', views.verify_payment, name="verify_payment"),
 
     path('save_details/', other_at_bundles.save_details, name='save_details'),
-    path('delete_unfinished/', other_at_bundles.delete_unfinished, name='delete_unfinished')
+    path('delete_unfinished/', other_at_bundles.delete_unfinished, name='delete_unfinished'),
+
+    path('credit_user', views.credit_user, name='credit_user'),
+    path('services/mtn/', other_mtn_bundles.flexi_mtn, name='mtn'),
+
+    path('mtn_flexi_pay_with_wallet/', other_mtn_bundles.mtn_pay_with_wallet, name='mtn_flexi_pay_with_wallet'),
+    path('mtn_pay_with_wallet/', other_mtn_bundles.mtn_pay_with_wallet, name='mtn_pay_with_wallet'),
+    path('pay_with_wallet/', other_at_bundles.pay_with_wallet, name='pay_with_wallet')
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

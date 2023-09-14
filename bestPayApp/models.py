@@ -1,6 +1,10 @@
+import secrets
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone
+
+from bestPayApp.paystack import Paystack
 
 
 # Create your models here.
@@ -9,6 +13,7 @@ class CustomUser(AbstractUser):
     last_name = models.CharField(max_length=100, null=False, blank=False)
     username = models.CharField(max_length=100, null=False, blank=False, unique=True)
     email = models.EmailField(max_length=250, null=False, blank=False)
+    wallet = models.FloatField(null=True, blank=True, default=0.0)
     phone = models.PositiveIntegerField(null=True, blank=True)
     password1 = models.CharField(max_length=100, null=False, blank=False)
     password2 = models.CharField(max_length=100, null=False, blank=False)
@@ -34,6 +39,40 @@ class Payment(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.reference}"
+
+    def save(self, *args, **kwargs):
+        while not self.reference:
+            ref = secrets.token_urlsafe(5)
+            object_with_similar_ref = Payment.objects.filter(reference=ref)
+            if not object_with_similar_ref:
+                self.reference = ref
+
+        super().save(*args, **kwargs)
+
+    def amount_value(self):
+        return int(self.amount) * 100
+
+    def verify_payment(self):
+        paystack = Paystack()
+        status, result = paystack.verify_payment(self.reference, self.amount)
+        if status:
+            if result['amount'] / 100 == self.amount:
+                self.transaction_status = "Verified"
+                self.payment_visited = True
+            self.save()
+        if self.transaction_status == "Verified":
+            return True
+        return False
+
+
+class MTNBundlePrice(models.Model):
+    price = models.FloatField(null=False, blank=False)
+    bundle_volume = models.FloatField(null=False, blank=False)
+
+    def __str__(self):
+        if self.bundle_volume >= 1000:
+            return f"GHS{self.price} - {self.bundle_volume/1000}GB"
+        return f"GHS{self.price} - {self.bundle_volume}MB"
 
 
 class AppPayment(models.Model):

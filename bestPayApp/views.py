@@ -118,7 +118,10 @@ def verify_payment(request, ref, channel):
         ishare_response = helper.send_ishare_bundle(request.user, payment.payment_number, bundle)
 
         if channel == "ishare":
-            return helper.ishare_after_verification(request, current_user, payment, bundle)
+            if models.IShareBundleTransaction.objects.filter(reference=ref):
+                return redirect('thank_you')
+            else:
+                return helper.ishare_after_verification(request, current_user, payment, bundle)
 
     # return render(request, "layouts/thank_you.html")
 

@@ -415,7 +415,7 @@ def ishare_verification(batch_id):
 
     if response.status_code == 200:
         json_data = response.json()
-
+        print(json_data)
         return json_data
     else:
         return False

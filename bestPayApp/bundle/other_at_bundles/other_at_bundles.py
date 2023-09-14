@@ -226,7 +226,7 @@ def initiate_payment(request):
                     return redirect('ishare_bundle')
             else:
                 print("nope")
-        context = {'form': form, 'wallet': 0 if user.wallet is None or user.wallet is 0.0 else user.wallet}
+        context = {'form': form}
         return render(request, 'layouts/services/ishare.html', context=context)
 
 

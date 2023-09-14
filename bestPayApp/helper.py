@@ -464,11 +464,10 @@ def ishare_after_verification(request, current_user, payment, bundle):
                     reference=payment.reference,
                     batch_id=batch_id,
                     message="Status code was 200 but query showed the transaction was unsuccessful",
-                    transaction_status="Failed"
+                    transaction_status="Successful"
                 )
                 new_ishare_bundle_transaction.save()
-                messages.info(request, "Something went wrong with your transaction")
-                return redirect('failed')
+                return redirect('thank_you')
         else:
             new_ishare_bundle_transaction = models.IShareBundleTransaction.objects.create(
                 user=current_user,

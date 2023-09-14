@@ -33,7 +33,7 @@ class Payment(models.Model):
     amount = models.FloatField(null=True, blank=True)
     payment_description = models.CharField(max_length=500, null=True, blank=True)
     transaction_status = models.CharField(max_length=256, null=True, blank=True)
-    transaction_date = models.CharField(max_length=250, null=True, blank=True)
+    transaction_date = models.DateTimeField(auto_now_add=True)
     message = models.CharField(max_length=500, null=True, blank=True)
     payment_visited = models.BooleanField(blank=False, null=True)
 

@@ -190,6 +190,7 @@ def save_details(request):
         return JsonResponse({'status': 'True'})
 
 
+@login_required(login_url='login')
 def initiate_payment(request):
     status = models.Site.objects.filter(status=True).first()
     if status:

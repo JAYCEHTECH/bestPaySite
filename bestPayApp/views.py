@@ -115,32 +115,32 @@ def verify_payment(request, ref, channel):
         print("Verified")
         bundle = helper.ishare_map[float(payment.amount)]
         print(bundle)
-        ishare_response = helper.send_ishare_bundle(request.user, payment.payment_number, bundle)
 
         if channel == "ishare":
-            if models.IShareBundleTransaction.objects.filter(reference=ref):
+            if models.IShareBundleTransaction.objects.filter(reference=ref, message="200 Status Code") or models.IShareBundleTransaction.objects.filter(reference=ref, message="Status code was 200 but query showed the transaction was unsuccessful") or models.IShareBundleTransaction.objects.filter(reference=ref, message="Status code was 200 but query did not return anything useful"):
                 return redirect('thank_you')
             else:
+                ishare_response = helper.send_ishare_bundle(request.user, payment.payment_number, bundle)
                 if ishare_response.status_code == 200:
                     data = ishare_response.json()
                     batch_id = data["batchId"]
+                    new_ishare_bundle_transaction = models.IShareBundleTransaction.objects.create(
+                        user=current_user,
+                        email=current_user.email,
+                        bundle_number=payment.payment_number,
+                        offer=f"{bundle}MB",
+                        reference=payment.reference,
+                        batch_id=batch_id,
+                        message="200 Status Code",
+                        transaction_status="Successful"
+                    )
+                    new_ishare_bundle_transaction.save()
                     sleep(10)
                     verified = helper.ishare_verification(batch_id)
                     if verified is not False:
                         code = verified["flexiIshareTranxStatus"]["flexiIshareTranxStatusResult"]["apiResponse"][
                             "responseCode"]
                         if code == '200':
-                            new_ishare_bundle_transaction = models.IShareBundleTransaction.objects.create(
-                                user=current_user,
-                                email=current_user.email,
-                                bundle_number=payment.payment_number,
-                                offer=f"{bundle}MB",
-                                reference=payment.reference,
-                                batch_id=batch_id,
-                                message="200 Status Code",
-                                transaction_status="Successful"
-                            )
-                            new_ishare_bundle_transaction.save()
                             receiver_message = f"Your bundle purchase has been completed successfully. {bundle}MB has been credited to you by {current_user.phone}.\nReference: {batch_id}\n"
                             sms_message = f"Hello @{request.user.username}. Your bundle purchase has been completed successfully. {bundle}MB has been credited to {payment.payment_number}.\nReference: {batch_id}\nThank you for using BestPay.\n\nThe BestPayTeam."
                             sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to=0{current_user.phone}&from=BESTPAY GH&sms={sms_message}"
@@ -155,30 +155,15 @@ def verify_payment(request, ref, channel):
                             except:
                                 return redirect("thank_you")
                         else:
-                            new_ishare_bundle_transaction = models.IShareBundleTransaction.objects.create(
-                                user=current_user,
-                                email=current_user.email,
-                                bundle_number=payment.payment_number,
-                                offer=f"{bundle}MB",
-                                reference=payment.reference,
-                                batch_id=batch_id,
-                                message="Status code was 200 but query showed the transaction was unsuccessful",
-                                transaction_status="Successful"
-                            )
-                            new_ishare_bundle_transaction.save()
+                            recent_ishare_transaction = models.IShareBundleTransaction.objects.get(reference=payment.reference)
+                            recent_ishare_transaction.message = "Status code was 200 but query showed the transaction was unsuccessful"
+                            recent_ishare_transaction.save()
                             return redirect('thank_you')
                     else:
-                        new_ishare_bundle_transaction = models.IShareBundleTransaction.objects.create(
-                            user=current_user,
-                            email=current_user.email,
-                            bundle_number=payment.payment_number,
-                            offer=f"{bundle}MB",
-                            reference=payment.reference,
-                            batch_id='Successful',
-                            message="Status code was 200 but query did not return anything useful",
-                            transaction_status="Success"
-                        )
-                        new_ishare_bundle_transaction.save()
+                        recent_ishare_transaction = models.IShareBundleTransaction.objects.get(
+                            reference=payment.reference)
+                        recent_ishare_transaction.message = "Status code was 200 but query did not return anything useful"
+                        recent_ishare_transaction.save()
                         messages.info(request, "Transaction Completed")
                         return redirect('thank_you')
 

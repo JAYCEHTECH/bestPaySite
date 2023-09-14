@@ -1,10 +1,8 @@
-import requests
-
-sms_message = "hi"
-
-url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to=0275680647&from=BestPay&sms={sms_message}"
 
 
-response = requests.request("GET", url)
+num = '242442147'
+res = num.zfill(10)
+print(res)
+print(int(res))
 
-print(response.text)
+

@@ -107,8 +107,10 @@ def api_documentation(request):
 
 @sync_to_async
 def verify_payment(request, ref, channel):
+    print("got to verification")
     payment = models.Payment.objects.get(reference=ref)
     sleep(5)
+    print("About to verify")
     verified = payment.verify_payment()
     current_user = request.user
 

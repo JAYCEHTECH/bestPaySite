@@ -222,6 +222,7 @@ def initiate_payment(request):
                         'email': request.user.email,
                         'channel': 'ishare'
                     }
+                    print("moved to make payment")
                     return render(request, 'layouts/services/make_payment.html', context)
                 else:
                     return redirect('ishare_bundle')

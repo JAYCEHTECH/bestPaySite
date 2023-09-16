@@ -196,7 +196,7 @@ def verify_payment(request, ref, channel):
             messages.success(request, "Verified Successfully")
             return redirect('home')
     else:
-        messages.success(request, "Payment did not go through for this reference")
+        messages.info(request, "Payment did not go through for this reference")
         try:
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         except:

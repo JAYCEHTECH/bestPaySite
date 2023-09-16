@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect
 
 from bestPayApp import helper, models, forms
 from bestPayApp.forms import SendMessageForm
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 
 
 # Create your views here.
@@ -192,8 +192,15 @@ def verify_payment(request, ref, channel):
                         return redirect('failed')
                     except:
                         return redirect('failed')
-
-    return render(request, "layouts/thank_you.html")
+        else:
+            messages.success(request, "Verified Successfully")
+            return redirect('home')
+    else:
+        messages.success(request, "Payment was not successful")
+        try:
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        except:
+            return redirect('ishare_bundle')
 
 
 def process_transaction(request, ref):

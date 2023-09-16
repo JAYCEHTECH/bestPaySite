@@ -206,7 +206,7 @@ def initiate_payment(request):
 
                 pk = "pk_live_99e10d6f2512390f0960dbf9ac3a8163af13e275"
 
-                payment = models.Payment.objects.create(amount=amount, user=request.user, payment_number=phone_number)
+                payment = models.Payment.objects.create(amount=amount, user=request.user, payment_number=phone_number, payment_description="Ishare Payment")
                 payment.save()
 
                 reference = payment.reference

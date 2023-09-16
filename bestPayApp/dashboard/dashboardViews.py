@@ -16,4 +16,14 @@ def txn_table(request, keyword):
     data = helper.data_needed_from_model(keyword, request.user)
     model_data = data["model_data"]
     heading = data["heading"]
-    return render(request, 'dashboard/layouts/tables.html', context={'data': model_data, 'heading':heading})
+    return render(request, 'dashboard/layouts/tables.html', context={'data': model_data, 'heading': heading})
+
+
+@login_required(login_url='login')
+def payment_table(request):
+    payments = models.Payment.objects.filter(user=request.user, payment_description="Ishare Payment")
+    context = {'payments': payments}
+    return render(request, "dashboard/layouts/payment-table.html", context=context)
+
+
+

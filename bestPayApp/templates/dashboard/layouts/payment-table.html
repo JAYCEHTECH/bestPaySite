@@ -1,0 +1,66 @@
+{% extends 'dashboard/base.html' %}
+
+    {% block content %}
+        {% include 'dashboard/inc/navbar.html' %}
+        <div id="layoutSidenav">
+            {% include 'dashboard/inc/sideNav.html' %}
+            <div id="layoutSidenav_content">
+                <main>
+                    <div class="container px-2">
+                        <h1 class="mt-4">{{ heading }}</h1>
+                        <ol style="background-color: transparent" class="breadcrumb mb-4">
+                            <li class="breadcrumb-item"><a href="{% url 'user-dashboard' %}">Dashboard</a></li>
+                            <li class="breadcrumb-item active">Flexi Bundle Payments</li>
+                        </ol>
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                Here you can find all your payment transactions and verify them.
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-table me-1"></i>
+                                Flexi Payment Table
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table" id="table_id">
+                                    <thead>
+                                        <tr>
+                                            <th>Reference</th>
+                                            <th>Crediting Number</th>
+                                            <th>Amount</th>
+                                            <th>Status</th>
+                                            <th>Txn. Date</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Reference</th>
+                                            <th>Payment Number</th>
+                                            <th>Amount</th>
+                                            <th>Status</th>
+                                            <th>Txn. Date</th>
+                                        </tr>
+                                    </tfoot>
+                                    <tbody>
+                                    {% for payment in payments %}
+                                        <tr>
+                                            <td>{{ payment.reference}}</td>
+                                            <td>{{ payment.payment_number}}</td>
+                                            <td>{{ payment.amount}}</td>
+                                            <td>{{ payment.transaction_status}}</td>
+                                            <td>{{ payment.transaction_date}}</td>
+                                            <td><a href="{% url 'verify_payment' ref=payment.reference channel=ishare %}" class="btn btn-sm btn-success">Verify</a></td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+                {% include 'dashboard/inc/footer.html' %}
+            </div>
+        </div>
+    {% endblock %}

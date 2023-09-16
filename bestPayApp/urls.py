@@ -95,6 +95,7 @@ urlpatterns = [
 
     path('credit_user', views.credit_user, name='credit_user'),
     path('services/mtn/', other_mtn_bundles.flexi_mtn, name='mtn'),
+    path('dashboard/flexi-payment-table', dashboardViews.payment_table, name='flexi_payment_table'),
 
     # path('mtn_flexi_pay_with_wallet/', other_mtn_bundles.mtn_pay_with_wallet, name='mtn_flexi_pay_with_wallet'),
     # path('mtn_pay_with_wallet/', other_mtn_bundles.mtn_pay_with_wallet, name='mtn_pay_with_wallet'),

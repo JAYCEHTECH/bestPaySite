@@ -44,6 +44,17 @@
             s0.parentNode.insertBefore(s1,s0);
             })();
         </script>
+
+        <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+        alertify.set('notifier','position', 'top-right');
+        {% for msg in messages %}
+        alertify.notify('{{msg}}', 'custom');
+        {% endfor %}
+    </script>
     <!--End of Tawk.to Script-->
 
     </body>

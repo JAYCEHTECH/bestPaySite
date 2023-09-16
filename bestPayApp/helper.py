@@ -68,7 +68,7 @@ def send_ishare_bundle(current_user, phone_number, bundle):
         "accountNo": f"233{str(current_user.phone)}",
         "accountFirstName": current_user.first_name,
         "accountLastName": current_user.last_name,
-        "accountMsisdn": str(phone_number),
+        "accountMsisdn": f"0{phone_number}",
         "accountEmail": current_user.email,
         "accountVoiceBalance": 0,
         "accountDataBalance": float(bundle),

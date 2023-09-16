@@ -61,6 +61,7 @@
 			ref: ref,
             currency: currency,
 			callback: function (response) {
+                console.log("callback")
 				window.location.href = "{% url 'verify_payment' ref=reference_f channel=channel%}";
 			},
             onClose: function(){

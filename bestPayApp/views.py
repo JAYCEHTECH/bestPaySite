@@ -154,13 +154,16 @@ def verify_payment(request, ref, channel):
                                 r_sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to={payment.payment_number}&from=Bundle&sms={receiver_message}"
                                 response = requests.request("GET", url=r_sms_url)
                                 print(response.text)
+                                messages.success(request, "Payment Verification Successful")
                                 return redirect("thank_you")
                             except:
+                                messages.success(request, "Payment Verification Successful")
                                 return redirect("thank_you")
                         else:
                             recent_ishare_transaction = models.IShareBundleTransaction.objects.get(reference=payment.reference)
                             recent_ishare_transaction.message = "Status code was 200 but query showed the transaction was unsuccessful"
                             recent_ishare_transaction.save()
+                            messages.success(request, "Payment Verification Successful")
                             return redirect('thank_you')
                     else:
                         recent_ishare_transaction = models.IShareBundleTransaction.objects.get(
@@ -168,6 +171,7 @@ def verify_payment(request, ref, channel):
                         recent_ishare_transaction.message = "Status code was 200 but query did not return anything useful"
                         recent_ishare_transaction.save()
                         messages.info(request, "Transaction Completed")
+                        messages.success(request, "Payment Verification Successful")
                         return redirect('thank_you')
 
                 else:
@@ -189,6 +193,7 @@ def verify_payment(request, ref, channel):
                         response = requests.request("GET", url=sms_url)
                         print(response.status_code)
                         print(response.text)
+                        messages.success(request, "Payment Verification Successful")
                         return redirect('failed')
                     except:
                         return redirect('failed')

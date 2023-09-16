@@ -77,6 +77,23 @@
 
   <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
     <script src="{% static 'custom/index.js' %}"></script>
+       <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+  <script>
+    {% for msg in messages %}
+        {% if msg.tags == "success" %}
+        swal("{{ msg }}", {button: "Ok", icon:"success"});
+        {% elif msg.tags == "info" %}
+        swal("{{ msg }}", {button: "Ok", icon:"warning", type:"info"},);
+        {% else %}
+        swal("{{ msg }}", {button: "Ok", icon:"error"});
+        {% endif %}
+    {% endfor %}
+  </script>
 
     <!--Start of Tawk.to Script-->
         <script type="text/javascript">

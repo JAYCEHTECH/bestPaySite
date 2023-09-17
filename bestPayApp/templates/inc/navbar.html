@@ -23,6 +23,9 @@
 {#            </li>#}
               {% if request.user.is_authenticated %}
                 <li class="nav-item">
+              <a  href="{% url 'user-dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'user-dashboard' %}active fw-bold{% endif %}">Dashboard</a>
+            </li>
+                <li class="nav-item">
                     <a href="{% url 'logout' %}" class="nav-link">Logout</a>
                 </li>
               {% else %}

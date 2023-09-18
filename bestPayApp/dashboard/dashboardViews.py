@@ -21,7 +21,7 @@ def txn_table(request, keyword):
 
 @login_required(login_url='login')
 def payment_table(request):
-    payments = models.Payment.objects.filter(user=request.user, payment_description="Ishare Payment").reverse()
+    payments = models.Payment.objects.filter(user=request.user, payment_description="Ishare Payment").order_by('transaction_date').reverse()
     context = {'payments': payments}
     return render(request, "dashboard/layouts/payment-table.html", context=context)
 

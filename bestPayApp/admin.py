@@ -122,4 +122,6 @@ admin.site.register(models.Cart, CartAdmin)
 admin.site.register(models.Order, OrderAdmin)
 admin.site.register(models.OrderItem, OrderItemAdmin)
 
+admin.site.register(models.UrlData)
+
 

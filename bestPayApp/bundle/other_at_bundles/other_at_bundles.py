@@ -231,7 +231,7 @@ def initiate_payment(request):
                 print("nope")
         context = {'form': form}
         return render(request, 'layouts/services/ishare.html', context=context)
-
+    return render(request, "layouts/maintenance.html")
 
 # def pay_with_wallet(request):
 #     if request.method == "POST":

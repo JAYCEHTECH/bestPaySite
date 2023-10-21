@@ -115,6 +115,10 @@ def verify_payment(request, ref, channel):
     current_user = request.user
 
     if verified:
+        statuss = models.Site.objects.all()
+        status = statuss[0]
+        print(status)
+        needed = status.ishare_status
         print("Verified")
         bundle = helper.ishare_map[float(payment.amount)]
         print(bundle)
@@ -123,6 +127,20 @@ def verify_payment(request, ref, channel):
             if models.IShareBundleTransaction.objects.filter(reference=ref, message="200 Status Code") or models.IShareBundleTransaction.objects.filter(reference=ref, message="Status code was 200 but query showed the transaction was unsuccessful") or models.IShareBundleTransaction.objects.filter(reference=ref, message="Status code was 200 but query did not return anything useful"):
                 return redirect('thank_you')
             else:
+                if needed == "Inactive":
+                    new_ishare_bundle_transaction = models.IShareBundleTransaction.objects.create(
+                        user=current_user,
+                        email=current_user.email,
+                        bundle_number=payment.payment_number,
+                        offer=f"{bundle}MB",
+                        reference=payment.reference,
+                        batch_id="None",
+                        message="Inactive Ishare",
+                        transaction_status="Pending"
+                    )
+                    new_ishare_bundle_transaction.save()
+                    messages.success(request, "Payment Verification Successful. Your transaction will be completed in no time")
+                    return redirect('thank_you')
                 ishare_response = helper.send_ishare_bundle(request.user, payment.payment_number, bundle)
                 if ishare_response.status_code == 200:
                     data = ishare_response.json()

@@ -21,6 +21,11 @@ class CustomUser(AbstractUser):
 
 class Site(models.Model):
     status = models.BooleanField(null=True, blank=True)
+    choices = (
+        ("Active", "Active"),
+        ("Inactive", "Inactive")
+    )
+    ishare_status = models.CharField(choices=choices, max_length=200, default="Active", null=False, blank=False)
 
     def __str__(self):
         return str(self.status)

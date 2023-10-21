@@ -193,6 +193,10 @@ def save_details(request):
 @login_required(login_url='login')
 def initiate_payment(request):
     status = models.Site.objects.filter(status=True).first()
+    statuss = models.Site.objects.all()
+    i_status = statuss[0]
+    print(i_status)
+    print(i_status.ishare_status)
     if status:
         form = IShareBundleForm()
         if request.method == "POST":
@@ -205,6 +209,7 @@ def initiate_payment(request):
                 print(phone_number)
 
                 pk = "pk_live_99e10d6f2512390f0960dbf9ac3a8163af13e275"
+                # pk = "pk_test_39d8b43d02deb0cc6eeb5389db47ee263928045a"
 
                 payment = models.Payment.objects.create(amount=amount, user=request.user, payment_number=phone_number, payment_description="Ishare Payment")
                 payment.save()

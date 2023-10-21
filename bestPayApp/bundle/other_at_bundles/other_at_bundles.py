@@ -193,10 +193,6 @@ def save_details(request):
 @login_required(login_url='login')
 def initiate_payment(request):
     status = models.Site.objects.filter(status=True).first()
-    statuss = models.Site.objects.all()
-    i_status = statuss[0]
-    print(i_status)
-    print(i_status.ishare_status)
     if status:
         form = IShareBundleForm()
         if request.method == "POST":

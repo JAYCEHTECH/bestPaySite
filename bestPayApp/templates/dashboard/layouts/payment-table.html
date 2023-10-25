@@ -51,7 +51,7 @@
                                             <td>{{ payment.amount}}</td>
                                             <td>{{ payment.transaction_status}}</td>
                                             <td>{{ payment.transaction_date}}</td>
-                                            <td><a href="{% url 'verify_payment' ref=payment.reference channel='ishare' %}" class="btn btn-sm btn-success">Verify</a></td>
+{#                                            <td><a href="{% url 'verify_payment' ref=payment.reference channel='ishare' %}" class="btn btn-sm btn-success">Verify</a></td>#}
                                         </tr>
                                     {% endfor %}
                                     </tbody>

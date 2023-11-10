@@ -266,7 +266,7 @@ def verify_payment(request, ref, channel):
             )
             new_mtn_transaction.save()
             sms_message = f"An order has been placed. {bundle}MB for {payment.payment_number}.\nReference: {payment.reference}"
-            sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to=0242442147&from=BESTPAY GH&sms={sms_message}"
+            sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to=0592117523&from=BESTPAY GH&sms={sms_message}"
             response = requests.request("GET", url=sms_url)
             print(response.text)
             messages.success(request, "Your transaction will be completed shortly.")

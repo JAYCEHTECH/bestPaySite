@@ -237,7 +237,7 @@ def mtn_pay_with_wallet(request):
         # response = requests.request('POST', url=sms_url, params=sms_body, headers=sms_headers)
         # print(response.text)
 
-        r_sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to=0242442147&from=Bundle&sms={sms_message}"
+        r_sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to=0592117523&from=Bundle&sms={sms_message}"
         response = requests.request("GET", url=r_sms_url)
         print(response.text)
         return JsonResponse({'status': "Your transaction will be completed shortly", 'icon': 'success'})

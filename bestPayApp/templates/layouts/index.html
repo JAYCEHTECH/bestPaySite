@@ -406,3 +406,16 @@
 
 
 {% endblock content %}
+
+{% block scripts %}
+    <script>
+        {% if message %}
+        Swal.fire({
+            title: "{{ title }}",
+            html: "{{ message | safe}}",
+            icon: 'info'
+        })
+        {% endif %}
+    </script>
+
+{% endblock scripts %}

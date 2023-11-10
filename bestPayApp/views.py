@@ -1,5 +1,7 @@
 import datetime
 from time import sleep
+from markupsafe import escape
+import html
 
 import requests
 from asgiref.sync import sync_to_async
@@ -34,17 +36,24 @@ def home(request):
             response = requests.request("GET", url)
             print(response.text)
             print(message)
-    context = {'form': form}
-    announcements = models.NotificationMessage.objects.all()
-    if announcements:
-        for ann in announcements:
-            message = ann.message
-            status = ann.active
-            print(message)
+    announcement = models.NotificationMessage.objects.filter(active=True).first()
 
-            if status:
-                print("hello world this is active")
-                messages.info(request, f"{message}")
+    if announcement:
+        title = announcement.title
+        message = announcement.message
+        context = {'form': form, 'title': title, 'message': message}
+    else:
+        context = {'form': form}
+
+    # if announcements:
+    #     for ann in announcements:
+    #         message = ann.message
+    #         status = ann.active
+    #         print(message)
+    #
+    #         if status:
+    #             print("hello world this is active")
+    #             messages.info(request, f"{message}")
 
     return render(request, 'layouts/index.html', context=context)
     # return HttpResponse("Site under maintenance. Try again later.")

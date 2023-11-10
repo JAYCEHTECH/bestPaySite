@@ -33,6 +33,9 @@
                                     <a class="nav-link" href="{% url 'txn_table' keyword="airteltigo_bundles" %}">AirtelTigo Bundle Txns.</a>
                                     <a class="nav-link" href="{% url 'txn_table' keyword="airteltigo_sika_kokoo" %}">AirtelTigo Sika Kokoo Txns</a>
                                     <a class="nav-link" href="{% url 'txn_table' keyword="vodafone_bundles" %}">Vodafone Bundle Txns.</a>
+                                    {% if request.user.is_superuser %}
+                                        <a class="nav-link" href="{% url 'mtn_admin' %}">MTN Admin.</a>
+                                    {% endif %}
                                 </nav>
                             </div>
                             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">

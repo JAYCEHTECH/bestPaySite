@@ -132,6 +132,11 @@ class MTNBundleTransaction(models.Model):
     reference = models.CharField(max_length=20, null=False, blank=True)
     transaction_date = models.DateTimeField(auto_now_add=True)
     transaction_status = models.CharField(max_length=100, null=False)
+    choices = (
+        ("Flexi", "Flexi"),
+        ("Normal", "Normal")
+    )
+    type = models.CharField(max_length=200, null=True, blank=True, choices=choices, default="Normal")
 
     def __str__(self):
         return f"{self.user.username} - {self.bundle_number} - {self.reference}"
@@ -295,6 +300,13 @@ class OrderItem(models.Model):
     def __str__(self):
         return f"{self.order.tracking_number} - {self.order.user} - {self.order.order_name}"
 
+
+class TopUpRequests(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    amount = models.PositiveIntegerField(null=True, blank=True)
+    date = models.DateTimeField(auto_now_add=True)
+    previous_balance = models.PositiveIntegerField(null=True, blank=True)
+    current_balance = models.PositiveIntegerField(null=True, blank=True)
 
 
 

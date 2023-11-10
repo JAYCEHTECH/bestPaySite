@@ -10,12 +10,11 @@
                         <h1 class="mt-4">{{ heading }}</h1>
                         <ol style="background-color: transparent" class="breadcrumb mb-4">
                             <li class="breadcrumb-item"><a href="{% url 'user-dashboard' %}">Dashboard</a></li>
-                            <li class="breadcrumb-item active">{{ heading }}</li>
+                            <li class="breadcrumb-item active">Flexi MTN Approvals</li>
                         </ol>
                         <div class="card mb-4">
                             <div class="card-body">
-                                Here you can find all your {{ heading }} transactions and make enquiries with the reference
-                                .
+                                Here you can find all your {{ heading }} transactions and make enquiries with the reference.
                             </div>
                         </div>
                         <div class="mb-4">
@@ -32,6 +31,7 @@
                                             <th>Reference</th>
                                             <th>Txn. Date</th>
                                             <th>Txn. Status</th>
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tfoot>
@@ -41,10 +41,11 @@
                                             <th>Reference</th>
                                             <th>Txn. Date</th>
                                             <th>Txn. Status</th>
+                                            <th>Action</th>
                                         </tr>
                                     </tfoot>
                                     <tbody>
-                                    {% for txn in data %}
+                                    {% for txn in txns %}
                                         <tr>
                                             <td>{{ txn.bundle_number}}</td>
                                             <td>{{ txn.offer}}</td>
@@ -53,7 +54,12 @@
                                             {% if txn.transaction_status == "Successful" %}
                                                 <td class="text-success">{{ txn.transaction_status}} <i class="fa fa-check-circle"></i></td>
                                             {% else %}
-                                                <td>{{ txn.transaction_status}}</td>
+                                                <td>{{ txn.transaction_status }}</td>
+                                            {% endif %}
+                                            {% if txn.transaction_status == "Successful" %}
+                                                <td><a href="#">Sent</a></td>
+                                            {% else %}
+                                                <td><a href="{% url 'mark_as_sent' reference=txn.reference %}">Mark as Sent</a></td>
                                             {% endif %}
                                         </tr>
                                     {% endfor %}

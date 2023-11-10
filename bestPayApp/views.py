@@ -1,8 +1,10 @@
+import datetime
 from time import sleep
 
 import requests
 from asgiref.sync import sync_to_async
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 from bestPayApp import helper, models, forms
@@ -73,6 +75,39 @@ def api_documentation(request):
     return render(request, "layouts/api-documentation.html")
 
 
+@login_required(login_url='login')
+def wallet_topup(request):
+    if request.method == "POST":
+        amount = request.POST.get("topup-amount")
+        print(amount)
+
+        pk = "pk_live_99e10d6f2512390f0960dbf9ac3a8163af13e275"
+        # pk = "pk_test_39d8b43d02deb0cc6eeb5389db47ee263928045a"
+
+        payment = models.Payment.objects.create(amount=amount, user=request.user, payment_description="Wallet Topup")
+        payment.save()
+
+        reference = payment.reference
+
+        if payment:
+            context = {
+                'payment': payment,
+                'reference_f': reference,
+                'field_values': request.POST,
+                'paystack_pub_key': pk,
+                'amount_value': payment.amount_value(),
+                'email': request.user.email,
+                'channel': 'topup'
+            }
+            print("moved to make payment")
+            return render(request, 'layouts/services/make_payment.html', context)
+        else:
+            return redirect('wallet-topup')
+    current_user = models.CustomUser.objects.get(id=request.user.id)
+    context = {'wallet_balance': current_user.wallet}
+    return render(request, "layouts/services/wallet-topup.html", context=context)
+
+
 # def verify_transaction(request, reference):
 #     if request.method == "GET":
 #         print("got here")
@@ -107,6 +142,7 @@ def api_documentation(request):
 
 @sync_to_async
 def verify_payment(request, ref, channel):
+    print(channel)
     print("got to verification")
     payment = models.Payment.objects.get(reference=ref)
     sleep(5)
@@ -115,13 +151,14 @@ def verify_payment(request, ref, channel):
     current_user = request.user
 
     if verified:
-        statuss = models.Site.objects.all()
-        status = statuss[0]
-        print(status)
-        needed = status.ishare_status
-        print("Verified")
-        bundle = helper.ishare_map[float(payment.amount)]
-        print(bundle)
+        if channel == "ishare":
+            statuss = models.Site.objects.all()
+            status = statuss[0]
+            print(status)
+            needed = status.ishare_status
+            print("Verified")
+            bundle = helper.ishare_map[float(payment.amount)]
+            print(bundle)
 
         if channel == "ishare":
             if models.IShareBundleTransaction.objects.filter(reference=ref, message="200 Status Code") or models.IShareBundleTransaction.objects.filter(reference=ref, message="Status code was 200 but query showed the transaction was unsuccessful") or models.IShareBundleTransaction.objects.filter(reference=ref, message="Status code was 200 but query did not return anything useful"):
@@ -191,7 +228,6 @@ def verify_payment(request, ref, channel):
                         messages.info(request, "Transaction Completed")
                         messages.success(request, "Payment Verification Successful")
                         return redirect('thank_you')
-
                 else:
                     new_ishare_bundle_transaction = models.IShareBundleTransaction.objects.create(
                         user=current_user,
@@ -215,6 +251,46 @@ def verify_payment(request, ref, channel):
                         return redirect('failed')
                     except:
                         return redirect('failed')
+        elif channel == "flexi_mtn":
+            print("verified")
+            print("This is flexi mtn")
+            offer = models.MTNBundlePrice.objects.get(price=payment.amount)
+            bundle = offer.bundle_volume
+            new_mtn_transaction = models.MTNBundleTransaction.objects.create(
+                user=request.user,
+                bundle_number=payment.payment_number,
+                offer=f"{bundle}MB",
+                reference=payment.reference,
+                transaction_status="Pending",
+                type="Flexi"
+            )
+            new_mtn_transaction.save()
+            sms_message = f"An order has been placed. {bundle}MB for {payment.payment_number}.\nReference: {payment.reference}"
+            sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to=0242442147&from=BESTPAY GH&sms={sms_message}"
+            response = requests.request("GET", url=sms_url)
+            print(response.text)
+            messages.success(request, "Your transaction will be completed shortly.")
+            return redirect('thank_you')
+        elif channel == "topup":
+            print("topup is here")
+            amount = payment.amount
+            print(amount)
+            current_user = models.CustomUser.objects.get(id=request.user.id)
+            current_user.wallet += amount
+            new_topup_txn = models.TopUpRequests.objects.create(
+                user=request.user,
+                amount=amount,
+                date=datetime.datetime.now(),
+                previous_balance=current_user.wallet,
+                current_balance=current_user.wallet + amount,
+            )
+            new_topup_txn.save()
+            current_user.save()
+            sms_message = f"Hello,\nYour BestPay wallet has been credited with GHS{amount}.\nDo more with BestPay.\nThank you!"
+            sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to=0{current_user.phone}&from=BESTPAY GH&sms={sms_message}"
+            response = requests.request("GET", url=sms_url)
+            print(response.text)
+            return redirect('thank_you')
         else:
             messages.success(request, "Verified Successfully")
             return redirect('home')

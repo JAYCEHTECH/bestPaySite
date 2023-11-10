@@ -72,6 +72,10 @@ class IShareBundleTransactionAdmin(admin.ModelAdmin):
     search_fields = ['reference', 'batch_id', 'bundle_number']
 
 
+class TopupRequestAdmin(admin.ModelAdmin):
+    list_display = ['user', 'amount', 'date', 'previous_balance', 'current_balance']
+
+
 class TvTransactionAdmin(admin.ModelAdmin):
     list_display = ['user', 'account_number', 'amount', 'reference', 'transaction_date', "transaction_status"]
     search_fields = ['reference']
@@ -116,6 +120,7 @@ admin.site.register(models.AppPayment)
 admin.site.register(models.AppIShareBundleTransaction)
 admin.site.register(models.Site)
 admin.site.register(models.MTNBundlePrice)
+admin.site.register(models.TopUpRequests, TopupRequestAdmin)
 
 admin.site.register(models.Product, ProductAdmin)
 admin.site.register(models.Cart, CartAdmin)

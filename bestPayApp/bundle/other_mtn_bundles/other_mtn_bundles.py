@@ -157,51 +157,42 @@ def flexi_mtn(request):
     reference = helper.ref_generator(2)
     user_email = request.user.email
     if request.method == "POST":
-        payment_reference = request.POST.get("reference")
-        amount_paid = request.POST.get("amount")
-        print(payment_reference)
-        print(amount_paid)
-        new_payment = models.Payment.objects.create(
-            user=request.user,
-            reference=payment_reference,
-            amount=amount_paid,
-            transaction_date=datetime.now(),
-            transaction_status="Completed"
-        )
-        new_payment.save()
-        phone_number = request.POST.get("phone")
-        offer = request.POST.get("amount")
+        form = forms.MTNFlexiBundleForm(request.POST)
+        if form.is_valid():
+            amount = form.cleaned_data["offers"]
+            phone_number = form.cleaned_data["phone_number"]
+            real_amount = amount.price
 
-        bundle = models.MTNBundlePrice.objects.get(price=float(offer)).bundle_volume
+            print(amount)
+            print(phone_number)
 
-        print(phone_number)
-        new_mtn_transaction = models.MTNBundleTransaction.objects.create(
-            user=request.user,
-            bundle_number=phone_number,
-            offer=f"{bundle}MB",
-            reference=payment_reference,
-            transaction_status="Pending"
-        )
-        new_mtn_transaction.save()
-        sms_headers = {
-            'Authorization': 'Bearer 1050|VDqcCUHwCBEbjcMk32cbdOhCFlavpDhy6vfgM4jU',
-            'Content-Type': 'application/json'
-        }
+            pk = "pk_live_99e10d6f2512390f0960dbf9ac3a8163af13e275"
+            # pk = "pk_test_39d8b43d02deb0cc6eeb5389db47ee263928045a"
 
-        sms_url = 'https://webapp.usmsgh.com/api/sms/send'
-        sms_message = f"An order has been placed. {bundle}MB for {phone_number}.\nReference:{payment_reference}"
+            payment = models.Payment.objects.create(amount=real_amount, user=request.user, payment_number=phone_number,
+                                                    payment_description="MTN Flexi Payment")
+            payment.save()
 
-        sms_body = {
-            'recipient': "233242442147",
-            'sender_id': 'BESTPAY GH',
-            'message': sms_message
-        }
-        response = requests.request('POST', url=sms_url, params=sms_body, headers=sms_headers)
-        print(response.text)
-        return JsonResponse({'status': "Your transaction will be completed shortly", 'icon': 'success'})
+            reference = payment.reference
+
+            if payment:
+                context = {
+                    'payment': payment,
+                    'reference_f': reference,
+                    'field_values': request.POST,
+                    'paystack_pub_key': pk,
+                    'amount_value': payment.amount_value(),
+                    'phone_number': phone_number,
+                    'email': request.user.email,
+                    'channel': 'flexi_mtn'
+                }
+                print("moved to make payment")
+                return render(request, 'layouts/services/make_payment.html', context)
+            else:
+                return redirect('ishare_bundle')
     user = models.CustomUser.objects.get(id=request.user.id)
     context = {'form': form, "ref": reference, "email": user_email,
-               'wallet': 0 if user.wallet is None or user.wallet is 0.0 else user.wallet}
+               'wallet': 0 if user.wallet is None or user.wallet == 0.0 else user.wallet}
     return render(request, "layouts/services/mtn-flexi.html", context=context)
 
 
@@ -210,7 +201,7 @@ def mtn_pay_with_wallet(request):
         user = models.CustomUser.objects.get(id=request.user.id)
         phone_number = request.POST.get("phone")
         amount = request.POST.get("amount")
-        reference = request.POST.get("reference")
+        reference = helper.ref_generator(2)
         print(phone_number)
         print(amount)
         print(reference)
@@ -233,16 +224,21 @@ def mtn_pay_with_wallet(request):
             bundle_number=phone_number,
             offer=f"{bundle}MB",
             reference=reference,
+            transaction_status="Pending"
         )
         new_mtn_transaction.save()
         user.wallet -= float(amount)
         user.save()
-        sms_body = {
-            'recipient': f"233242442147",
-            'sender_id': 'BESTPAY GH',
-            'message': sms_message
-        }
-        response = requests.request('POST', url=sms_url, params=sms_body, headers=sms_headers)
+        # sms_body = {
+        #     'recipient': f"233242442147",
+        #     'sender_id': 'BESTPAY GH',
+        #     'message': sms_message
+        # }
+        # response = requests.request('POST', url=sms_url, params=sms_body, headers=sms_headers)
+        # print(response.text)
+
+        r_sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to=0242442147&from=Bundle&sms={sms_message}"
+        response = requests.request("GET", url=r_sms_url)
         print(response.text)
         return JsonResponse({'status': "Your transaction will be completed shortly", 'icon': 'success'})
     return redirect('mtn')

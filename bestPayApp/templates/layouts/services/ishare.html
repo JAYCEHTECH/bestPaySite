@@ -52,8 +52,12 @@
                           <img src="{% static 'img/services/voca-fig.png' %}" alt=""> <span style="color: #383838">||</span>
                           <img src="{% static 'img/services/vima-fig.png' %}" alt="">
                         </div>
+                         <div class="col-md-12">
+                          <p>Wallet Balance: GHS{{ wallet }}. <a class="font-italic" href="{% url 'wallet-topup' %}">Click here to top up wallet</a></p>
+                        </div>
                         <button type="submit" class="btn btn-outline-success my-3 mx-2">Go to Checkout</button>
-{#                        <button type="button" class="btn btn-outline-primary my-3 mx-2 pay-with-wallet">Pay with Wallet</button>#}
+                        <button type="button" class="btn btn-outline-primary my-3 mx-2 pay-with-wallet">Pay with Wallet</button>
+{#                        <a href="{% url 'wallet-topup' %}">Click here to top up your wallet</a>#}
                     </div>
             </form>
         </div>
@@ -65,52 +69,52 @@
 {% endblock %}
 
 {% block scripts %}
-{#    <script>#}
-{#    $("body").on('click', '.pay-with-wallet', function(e){#}
-{#    let firstBtn = $(".paystack-btn")#}
-{#    let secondBtn = $(".pay-with-wallet")#}
-{#    let process = $(".process")#}
-{#    firstBtn.css('display', 'none')#}
-{##}
-{#    firstBtn.prop('disabled', true)#}
-{#    secondBtn.prop('disabled', true)#}
-{#    secondBtn.text("Processing...")#}
-{#    process.css('display', 'block')#}
-{##}
-{#    console.log("yes")#}
-{#    e.preventDefault()#}
-{#    console.log(email)#}
-{#    console.log(ref)#}
-{##}
-{#  let token = $("input[name=csrfmiddlewaretoken]").val();#}
-{#    let amount = $(".i-offer").val()#}
-{#        console.log(amount)#}
-{#    let phonenumber = $(".phone").val()#}
-{#    if (phonenumber.toString().length < 10 || phonenumber.toString().length !== 10 || phonenumber.toString().length > 10){#}
-{#      Swal.fire({text: "Phone number must be 10 digits", icon:"warning"})#}
-{#        firstBtn.prop('disabled', false)#}
-{#    secondBtn.prop('disabled', false)#}
-{#    secondBtn.text("Pay with Wallet")#}
-{#    process.css('display', 'none')#}
-{#      return;#}
-{#    }#}
-{##}
-{#    $.ajax({#}
-{#      method: "POST",#}
-{#      url: "/pay_with_wallet/",#}
-{#      data: {#}
-{#        phone: phonenumber,#}
-{#        amount: amount,#}
-{#        reference: ref,#}
-{#        csrfmiddlewaretoken: token,#}
-{#      },#}
-{#      success: function (response) {#}
-{#        console.log(response.status)#}
-{#        Swal.fire({text: response.status, confirmButtonText:"Okay"}).then((value) => {#}
-{#              location.reload()#}
-{#            })#}
-{#      },#}
-{#    });#}
-{#  })#}
-{#    </script>#}
+    <script>
+    $("body").on('click', '.pay-with-wallet', function(e){
+    let firstBtn = $(".paystack-btn")
+    let secondBtn = $(".pay-with-wallet")
+    let process = $(".process")
+    firstBtn.css('display', 'none')
+
+    firstBtn.prop('disabled', true)
+    secondBtn.prop('disabled', true)
+    secondBtn.text("Processing...")
+    process.css('display', 'block')
+
+    console.log("yes")
+    e.preventDefault()
+    console.log(email)
+    console.log(ref)
+
+  let token = $("input[name=csrfmiddlewaretoken]").val();
+    let amount = $(".i-offer").val()
+        console.log(amount)
+    let phonenumber = $(".phone").val()
+    if (phonenumber.toString().length < 10 || phonenumber.toString().length !== 10 || phonenumber.toString().length > 10){
+      Swal.fire({text: "Phone number must be 10 digits", icon:"warning"})
+        firstBtn.prop('disabled', false)
+    secondBtn.prop('disabled', false)
+    secondBtn.text("Pay with Wallet")
+    process.css('display', 'none')
+      return;
+    }
+
+    $.ajax({
+      method: "POST",
+      url: "/pay_with_wallet/",
+      data: {
+        phone: phonenumber,
+        amount: amount,
+        reference: ref,
+        csrfmiddlewaretoken: token,
+      },
+      success: function (response) {
+        console.log(response.status)
+        Swal.fire({text: response.status, confirmButtonText:"Okay", icon:response.icon}).then((value) => {
+              location.reload()
+            })
+      },
+    });
+  })
+    </script>
 {% endblock %}

@@ -30,7 +30,7 @@ mtn_codes = {
 }
 
 ishare_map = {
-    3.5: 500,
+    3.5: 50,
     4.5: 1000,
     7.5: 2000,
     10.5: 3000,
@@ -41,6 +41,28 @@ ishare_map = {
     25.5: 8000,
     30.5: 10000,
     45.5: 15000,
+    61: 20000,
+    76: 25000,
+    91: 30000,
+    121: 40000,
+    146: 50000,
+    286: 100000,
+    561: 200000
+}
+
+
+wallet_ishare_map = {
+    3: 50,
+    4: 1000,
+    7: 2000,
+    10: 3000,
+    12: 4000,
+    15: 5000,
+    18: 6000,
+    22: 7000,
+    25: 8000,
+    30: 10000,
+    45: 15000,
     61: 20000,
     76: 25000,
     91: 30000,
@@ -62,13 +84,14 @@ other_mtn_codes = {
 
 
 def send_ishare_bundle(current_user, phone_number, bundle):
+    print("in send bundle")
     url = "https://backend.boldassure.net:445/live/api/context/business/transaction/new-transaction"
 
     payload = json.dumps({
         "accountNo": f"233{str(current_user.phone)}",
         "accountFirstName": current_user.first_name,
         "accountLastName": current_user.last_name,
-        "accountMsisdn": f"0{phone_number}",
+        "accountMsisdn": phone_number,
         "accountEmail": current_user.email,
         "accountVoiceBalance": 0,
         "accountDataBalance": float(bundle),
@@ -80,13 +103,15 @@ def send_ishare_bundle(current_user, phone_number, bundle):
         'Authorization': config("BEARER_TOKEN"),
         'Content-Type': 'application/json'
     }
-
+    print("here")
     session = requests.Session()
     retry = Retry(connect=15, backoff_factor=0.5)
     adapter = HTTPAdapter(max_retries=retry)
     session.mount('https://', adapter)
 
     response = session.post(url, headers=headers, data=payload)
+    print(response)
+    print("after response")
 
     parsed = response.json()
 

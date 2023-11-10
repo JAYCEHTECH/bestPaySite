@@ -25,6 +25,9 @@
                 <li class="nav-item">
               <a  href="{% url 'user-dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'user-dashboard' %}active fw-bold{% endif %}">Dashboard</a>
             </li>
+                                  <li class="nav-item">
+              <a  href="{% url 'wallet-topup' %}" class="nav-link {% if request.resolver_match.url_name == 'wallet-topup' %}active fw-bold{% endif %}">Wallet Topup</a>
+            </li>
                 <li class="nav-item">
                     <a href="{% url 'logout' %}" class="nav-link">Logout</a>
                 </li>

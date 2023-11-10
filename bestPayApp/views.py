@@ -1,7 +1,5 @@
 import datetime
 from time import sleep
-from markupsafe import escape
-import html
 
 import requests
 from asgiref.sync import sync_to_async

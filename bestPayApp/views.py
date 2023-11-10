@@ -35,6 +35,8 @@ def home(request):
             print(response.text)
             print(message)
     context = {'form': form}
+    announcements = models.NotificationMessage.objects.all()
+    for ann in a
     return render(request, 'layouts/index.html', context=context)
     # return HttpResponse("Site under maintenance. Try again later.")
 

@@ -81,6 +81,9 @@ class TvTransactionAdmin(admin.ModelAdmin):
     search_fields = ['reference']
 
 
+class NotificationMessageAdmin(admin.ModelAdmin):
+    list_display = ['message', 'active']
+
 class AppPaymentAdmin(admin.ModelAdmin):
     ...
 
@@ -121,7 +124,7 @@ admin.site.register(models.AppIShareBundleTransaction)
 admin.site.register(models.Site)
 admin.site.register(models.MTNBundlePrice)
 admin.site.register(models.TopUpRequests, TopupRequestAdmin)
-admin.site.register(models.NotificationMessage)
+admin.site.register(models.NotificationMessage, NotificationMessageAdmin)
 
 admin.site.register(models.Product, ProductAdmin)
 admin.site.register(models.Cart, CartAdmin)

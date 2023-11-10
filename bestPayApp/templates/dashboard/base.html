@@ -49,26 +49,42 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+{#        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>#}
 
   <script>
     {% for msg in messages %}
-        {% if msg.tags == "success" %}
-        swal("{{ msg }}", {button: "Ok", icon:"success"});
-        {% elif msg.tags == "info" %}
-        swal("{{ msg }}", {button: "Ok", icon:"warning", type:"info"},);
-        {% else %}
-        swal("{{ msg }}", {button: "Ok", icon:"error"});
-        {% endif %}
-    {% endfor %}
+            {% if msg.tags == "success" %}
+            Swal.fire({
+                text: '{{ msg }}',
+                icon: 'success',
+            })
+            {% elif msg.tags == "warning" %}
+            Swal.fire({
+                text: '{{ msg }}',
+                icon: 'warning',
+            })
+
+                {% elif msg.tags == "info" %}
+            Swal.fire({
+                text: '{{ msg }}',
+                icon: 'info',
+            })
+            {% else %}
+            Swal.fire({
+                text: '{{ msg }}',
+                icon: 'error',
+                timer: 1000
+            })
+            {% endif %}
+        {% endfor %}
   </script>
 
-<script>
-        alertify.set('notifier','position', 'top-right');
-        {% for msg in messages %}
-        alertify.notify('{{msg}}', 'custom');
-        {% endfor %}
-    </script>
+{#<script>#}
+{#        alertify.set('notifier','position', 'top-right');#}
+{#        {% for msg in messages %}#}
+{#        alertify.notify('{{msg}}', 'custom');#}
+{#        {% endfor %}#}
+{#    </script>#}
     <!--End of Tawk.to Script-->
 
     </body>

@@ -309,6 +309,13 @@ class TopUpRequests(models.Model):
     current_balance = models.PositiveIntegerField(null=True, blank=True)
 
 
+class NotificationMessage(models.Model):
+    message = models.CharField(max_length=400, null=True, blank=True)
+    title = models.CharField(max_length=200, null=True, blank=True)
+    active = models.BooleanField(default=False)
+
+
+
 
 
 

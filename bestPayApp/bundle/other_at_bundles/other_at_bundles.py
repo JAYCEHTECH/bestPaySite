@@ -249,6 +249,7 @@ def pay_with_wallet(request):
         print(amount)
         print(reference)
         bundle = helper.ishare_map[float(amount)]
+
         print(bundle)
         send_bundle_response = helper.send_ishare_bundle(request.user, phone_number, bundle)
         data = send_bundle_response.json()
@@ -287,14 +288,22 @@ def pay_with_wallet(request):
                     r_sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to={phone_number}&from=Bundle&sms={receiver_message}"
                     response = requests.request("GET", url=r_sms_url)
                     print(response.text)
-                    current_user.wallet -= float(amount)
+                    taxable_amount = 0
+                    if 3.5 <= float(amount) <= 45.5:
+                        taxable_amount = float(amount) - 0.5
+                    print(f"taxable_amount is {taxable_amount}")
+                    current_user.wallet -= float(taxable_amount)
                     current_user.save()
                     return JsonResponse({'status': 'Transaction Completed Successfully', 'icon': 'success'})
                 else:
                     recent_ishare_transaction = models.IShareBundleTransaction.objects.get(reference=reference)
                     recent_ishare_transaction.message = "Status code was 200 but query showed the transaction was unsuccessful"
                     recent_ishare_transaction.save()
-                    current_user.wallet -= float(amount)
+                    taxable_amount = 0
+                    if 3.5 <= float(amount) <= 45.5:
+                        taxable_amount = float(amount) - 0.5
+                    print(f"taxable_amount is {taxable_amount}")
+                    current_user.wallet -= float(taxable_amount)
                     current_user.save()
                     return JsonResponse({'status': 'Transaction Completed Successfully',  'icon': 'success'})
             else:
@@ -302,7 +311,11 @@ def pay_with_wallet(request):
                     reference=reference)
                 recent_ishare_transaction.message = "Status code was 200 but query did not return anything useful"
                 recent_ishare_transaction.save()
-                current_user.wallet -= float(amount)
+                taxable_amount = 0
+                if 3.5 <= float(amount) <= 45.5:
+                    taxable_amount = float(amount) - 0.5
+                print(f"taxable_amount is {taxable_amount}")
+                current_user.wallet -= float(taxable_amount)
                 current_user.save()
                 messages.info(request, "Transaction Completed")
                 return JsonResponse({'status': 'Transaction Completed Successfully',  'icon': 'success'})

@@ -248,7 +248,7 @@ def pay_with_wallet(request):
         print(phone_number)
         print(amount)
         print(reference)
-        bundle = helper.wallet_ishare_map[float(amount)]
+        bundle = helper.ishare_map[float(amount)]
         print(bundle)
         send_bundle_response = helper.send_ishare_bundle(request.user, phone_number, bundle)
         data = send_bundle_response.json()

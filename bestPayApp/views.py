@@ -186,7 +186,7 @@ def verify_payment(request, ref, channel):
                     print(status)
                     message = status["flexiIshareTranxStatus"]["flexiIshareTranxStatusResult"]["apiResponse"]["responseMsg"]
                     if message == "No record for transactionID":
-                        ishare_response = helper.send_ishare_bundle(request.user, payment.payment_number, bundle)
+                        ishare_response = helper.send_ishare_bundle(request.user, txn.bundle_number, bundle)
                         if ishare_response.status_code == 200:
                             data = ishare_response.json()
                             batch_id = data["batchId"]

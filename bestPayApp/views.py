@@ -184,6 +184,20 @@ def verify_payment(request, ref, channel):
                 status = helper.ishare_verification(txn.batch_id)
                 if status is not False:
                     print(status)
+                    message = status["flexiIshareTranxStatus"]["flexiIshareTranxStatusResult"]["apiResponse"]["responseMsg"]
+                    if message == "No record for transactionID":
+                        ishare_response = helper.send_ishare_bundle(request.user, payment.payment_number, bundle)
+                        if ishare_response.status_code == 200:
+                            data = ishare_response.json()
+                            batch_id = data["batchId"]
+                            txn.batch_id = batch_id
+                            txn.message = "200 Status Code"
+                            txn.transaction_status = "Successful"
+                            txn.save()
+                            return redirect('thank_you')
+                        else:
+                            messages.error(request, "Try again")
+                            return redirect('flexi_payment_table')
                 return redirect('thank_you')
             else:
                 if needed == "Inactive":

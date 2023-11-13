@@ -31,7 +31,7 @@ def payment_table(request):
 @login_required(login_url='login')
 def mtn_admin(request):
     if request.user.is_superuser:
-        all_flexi_transactions = models.MTNBundleTransaction.objects.filter(type="Flexi")
+        all_flexi_transactions = models.MTNBundleTransaction.objects.filter(type="Flexi").order_by('transaction_date').reverse()
         context = {
             'txns': all_flexi_transactions
         }

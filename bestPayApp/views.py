@@ -180,6 +180,10 @@ def verify_payment(request, ref, channel):
 
         if channel == "ishare":
             if models.IShareBundleTransaction.objects.filter(reference=ref, message="200 Status Code") or models.IShareBundleTransaction.objects.filter(reference=ref, message="Status code was 200 but query showed the transaction was unsuccessful") or models.IShareBundleTransaction.objects.filter(reference=ref, message="Status code was 200 but query did not return anything useful"):
+                txn = models.IShareBundleTransaction.objects.get(reference=ref)
+                status = helper.ishare_verification(txn.batch_id)
+                if status is not False:
+                    print(status)
                 return redirect('thank_you')
             else:
                 if needed == "Inactive":
